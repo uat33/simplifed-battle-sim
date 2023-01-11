@@ -16,7 +16,7 @@ import types.Type;
  * This class is where all the setup is done.
  * We need four array lists which contain info taken from text files.
  * This is done here because those arraylists need to be easily accessible from other classes
- * Instead of doing it in the driver, we can make them static fields seperate from the rest. 
+ * Instead of doing it in the driver, we can make them static fields separate from the rest.
  * Much easier to keep track of.
  */
 
@@ -38,13 +38,13 @@ public class Setup {
 		// each of those objects has the matchups with other types as an attribute. 
 		// using a text file which contains the details of these matchups, and a method
 		// we create an arraylist that contains all the types and their matchups as we will need this later. 
-		types = typeSetup(new Scanner(new File("../finalProject/textFiles/typeMatchups"))); // setup types 
+		types = typeSetup(new Scanner(new File("textFiles/typeMatchups.txt"))); // setup types
 		// next set up the moves that the pokemon will use. 
 		// this is actually where the bulk of the work is for reasons that will become clear shortly
 		// this is the same as the type pretty much.
 		// an arraylist where each item is a move object.
 		// name this one movesFile to avoid confusion. 
-		moves =  moveSetup(new Scanner(new File("../finalProject/textFiles/moves.txt")), types); // create the array list
+		moves =  moveSetup(new Scanner(new File("textFiles/moves.txt")), types); // create the array list
 
 		// now that that's done, we can set up the teams.
 		// we have a bunch of teams in a folder
@@ -62,7 +62,7 @@ public class Setup {
 
 		// add the new text file numbers to the file path
 
-		String teamFile = "../finalProject/textFiles/teamFiles/team"; 
+		String teamFile = "textFiles/teamFiles/team";
 
 
 		// create the team as an arraylist of individuals
@@ -191,7 +191,7 @@ public class Setup {
 		 */
 
 		while(teamFile.hasNextLine()) {
-			Scanner pokeFile = new Scanner(new File("../finalProject/textFiles/pokemon.txt")); // we need to remake the text file so we can start at the top to find each pokemon
+			Scanner pokeFile = new Scanner(new File("textFiles/pokemon.txt")); // we need to remake the text file so we can start at the top to find each pokemon
 			String name = teamFile.nextLine(); // the pokemon's name will be the next line
 
 			int[] evs = getEvs(teamFile.nextLine()); // get the evs from the method
