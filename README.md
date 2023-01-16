@@ -1,7 +1,7 @@
 # simplifed-battle-sim
 
 
-Description: This is a simplied Pokemon Battle Simulator, made as a school project a couple years ago. People not familar with pokemon will not notice the simplification. That being said, the simplifications made are listed below.
+Description: This is a simplied Pokemon Battle Simulator, made as a project a while ago. People not familar with pokemon will not notice the simplification. That being said, the simplifications made are listed below.
 
 
 1. No items or abilites. If you add a new text file to the teamFiles, these must be removed.
