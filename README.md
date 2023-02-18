@@ -11,5 +11,5 @@ Description: This is a simplied Pokemon Battle Simulator, made as a project a wh
 
  Teams are taken randomly from text files. There are only 5 currently, but more could be added easily. 
 
- Instructions: Run the Driver.java file. Seeing as a lot of pokemon revolves around information, there's no good way to do this on one computer. Instead, we have a bad way, which is essentially that there are 3 seconds between turns for someone to pass the computer around.
+ Instructions: Run the Driver.java file. Seeing as a lot of pokemon revolves around information, there's no good way to do this on one computer. Instead, there are 3 seconds between turns for someone to pass the computer around.
  
