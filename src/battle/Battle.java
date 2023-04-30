@@ -138,11 +138,11 @@ public class Battle {
 
 
 
-		if (Setup.team1.size() > 0) { // if team1 still has pokemon in it, player 2 is the winner
-			System.out.println("Player 2 wins!");
-		}
-		else { // otherwise we know player 1 wins
+		if (Setup.team1.size() > 0) { // if team1 still has pokemon in it, player 1 is the winner
 			System.out.println("Player 1 wins!");
+		}
+		else { // otherwise we know player 2 wins
+			System.out.println("Player 2 wins!");
 
 		}
 
