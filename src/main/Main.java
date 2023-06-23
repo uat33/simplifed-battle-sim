@@ -1,4 +1,4 @@
-// package everything so it is easier to organize.
+package main;// package everything so it is easier to organize.
 
 /*
  * This program is a pokemon battle simulator, for the 5th generation of pokemon.
@@ -7,6 +7,9 @@
  *
 
  */
+
+import battle.Battle;
+import setup.Setup;
 
 import java.io.FileNotFoundException;
 
@@ -24,7 +27,7 @@ public class Main {
 
         Setup set = new Setup(); // just create the setup object so all the setup is done in that class
 
-//        Battle battle = new Battle(); // create a battle class, where the battle happens.
+        Battle battle = new Battle(); // create a battle class, where the battle happens.
 
     }
 

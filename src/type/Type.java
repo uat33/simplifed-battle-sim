@@ -1,3 +1,5 @@
+package type;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -68,6 +70,7 @@ public class Type {
 
 
 
+
 	// the match-ups are 17 numbers and have no context. so it's not really useful to include it in the to string.
 	@Override
 	public String toString() {
@@ -75,10 +78,6 @@ public class Type {
 		return typeName + matchup.toString();
 
 	}
-
-
-
-
 
 
 
