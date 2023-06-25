@@ -164,7 +164,7 @@ public class Battle {
 
         // get the users decision
         int returnValue = JOptionPane.showOptionDialog(null, "Player " + target.getTeamNum(), "Send in new pokemon",
-                JOptionPane.WARNING_MESSAGE, 0, null, names, null);
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, names, null);
 
         return team.get(returnValue); // return the chosen pokemon
 
@@ -209,7 +209,7 @@ public class Battle {
         // we want to show the player number and the name of their pokemon
         // the third parameter is the window title, where we're just putting the turn number
         int returnValue = JOptionPane.showOptionDialog(null, "Player " + pokemon.getTeamNum() + ": " + pokemon.getName(), "Turn " + turns,
-                JOptionPane.WARNING_MESSAGE, 0, null, options, null);
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, null);
         // returnValue is the index of what the user chose, hidden from the other player.
 
 
@@ -238,7 +238,7 @@ public class Battle {
             String[] back = {"Back"}; // the only option is back, to make an actual decision
             // show the window
             int choice = JOptionPane.showOptionDialog(null, info, "More Information",
-                    JOptionPane.WARNING_MESSAGE, 0, null, back, null);
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, back, null);
 
             if(choice == 0) return playerTurn(pokemon, turns, team); // if the choose back, just call the method again -- recursion.
 
@@ -263,7 +263,7 @@ public class Battle {
         // show the name of the pokemon they're switching out
 
         int switchPokemon = JOptionPane.showOptionDialog(null, "Pokemon Out: " + pokemon.getName(), "Switch",
-                JOptionPane.WARNING_MESSAGE, 0, null, optionsFinal, null);
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, optionsFinal, null);
 
         // if they choose back, just call the method again -- recursion.
         // we need to check it like this, because the index of back changes based on how many pokemon are alive

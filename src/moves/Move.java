@@ -120,10 +120,4 @@ public abstract class Move{
         return power;
     }
 
-
-    public String getAccuracy() {
-        return accuracy;
-    }
-
-
 }
