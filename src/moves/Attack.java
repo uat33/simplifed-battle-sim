@@ -18,13 +18,9 @@ public class Attack extends Move {
 
     public void purpose(Individual user, Individual target) throws InterruptedException {
 
-        if (getPp() == 0) {
-            System.out.println("No more PP for this move.");
-            return;
-        }
 
         System.out.println(user.getName() + " used " + getName());
-        if (!accuracyCheck(user, target)) { // check if the move misses
+        if (!accuracyCheck(user, target)) { // check if the move misses. update pp at the same time within that method
             System.out.println("The attack missed.");
             return;
         }
@@ -53,13 +49,14 @@ public class Attack extends Move {
 
         }
         // seeing as we're here, this is an attacking move and power should be an int. so we can cast it
-
-        int damage = ((((2 * PokemonInterface.level / 5 + 2) * att * Integer.parseInt(getPower()) / def) / 50) + 2);
+        int damage = 2 * PokemonInterface.level / 5 + 2;
+        if (getName().equals("Gyro Ball")) { // a special move, with a special way of calculating damage
+            damage = ((( damage * att * 25 * (target.getStats()[5] / user.getStats()[5]) / def) / 50) + 2);
+        }
+        else damage = (((damage * att * Integer.parseInt(getPower()) / def) / 50) + 2);
         // not done yet. the next part is tricky.
 
-        if (getName().equals("Gyro Ball")) { // a special move, with a special way of calculating damage
-            damage = ((((2 * PokemonInterface.level / 5 + 2) * att * 25 * (target.getStats()[5] / user.getStats()[5]) / def) / 50) + 2);
-        }
+
 
         // there are two multipliers that have to do with type.
         // the first is same type attack bonus called STAB.

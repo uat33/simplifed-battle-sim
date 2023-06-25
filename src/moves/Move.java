@@ -57,7 +57,7 @@ public abstract class Move{
 
     public boolean accuracyCheck(Individual user, Individual target) {
         ppUpdate(); // even if the move misses, the pp must be decremented
-        if (accuracy.equals("-")) return true;
+        if (accuracy.equals("—")) return true;
 
         double acc = Integer.parseInt(accuracy) * user.getAccuracy() * target.getEvasion();
         Random rand = new Random();

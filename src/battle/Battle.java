@@ -67,10 +67,10 @@ public class Battle {
             pokemon1.pokemonStatus();
             System.out.println(); // skip lines
             pokemon2.pokemonStatus();
-            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
+//            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
             Object decision1 = playerTurn(pokemon1, turns, Setup.team1); // the decision of the first player, saved into type object
             // this is because it can be of type Individual or type Move.
-            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
+//            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
             // ideally this time would be used to passover the computer
             Object decision2 = playerTurn(pokemon2, turns, Setup.team2); // the decision of the second player, same thought process as the first one.
             // we want to store both players' decisions so that they can be executed at the same time
@@ -98,15 +98,13 @@ public class Battle {
                 pokemon1.switchPokemonIn(); // switch in
 
                 ((Move) decision2).purpose(pokemon2, pokemon1); // decision 2 must be a move, so cast it and call its purpose method
-                // so call the purpose method
             }
             else if (decision2 instanceof Individual) { // if only player 2 chooses to switch
                 // do the switching
                 pokemon2 = switchPokemon(pokemon2, decision2); // set the field to the new pokemon
                 pokemon2.switchPokemonIn(); // switch it in
-                //check if pokemon can attack
+                // check if pokemon can attack
                 ((Move) decision1).purpose(pokemon1, pokemon2); // decision 1 must be a move, so cast it and call its purpose method
-                // so call the purpose method
             }
             else { // both attacked, so we have to check speed to see who moved first.
                 if (pokemon1.getStats()[5] > pokemon2.getStats()[5]) { // pokemon 1 is faster
@@ -214,41 +212,52 @@ public class Battle {
 
 
         if (returnValue > 1) {
-            return pokemon.moves[returnValue-2];  // -2 because of the two intial values
+            if (pokemon.moves[returnValue - 2].getPp() == 0){
+                // tell the user they are out of pp for that move
+                JOptionPane.showMessageDialog(null, "Out of PP. Select a different option.", "No more PP.", JOptionPane.WARNING_MESSAGE);
+                // return the method so they go again.
+                return playerTurn(pokemon, turns, team);
+            }
+
+            return pokemon.moves[returnValue-2];  // -2 because of the two initial values
         }
 
         if(returnValue == 0) { // wants more info
-            // show them another pane with more information recieved from the methods we made.
+            // show them another pane with more information received from the methods we made.
 
             // we don't actually know what specifically they're looking for, and its possible they don't either
 
-            // so show them everything they could want to know (as long as its allowed of course)
+            // so show them everything they could want to know (as long as it is permitted)
+            // for example, we are not going to show anything about the opposing pokemon except for its type and health
 
-            // add the pokemons info. this adds the pokemons moves, name, nature, and stats.
-            String info = pokemon.getMoves().toString() + '\n' + pokemon.toString();
+            // add the pokemons info this adds the pokemons moves, name, nature, and stats.
+            String info = pokemon.getMoves().toString() + '\n' + pokemon;
 
 
-            // we also want to show the types of the pokemon the opponent has out, to make thing easier.
+            // we also want to show the types of the pokemon the opponent has out and the percent health it has left
+            // type is not seen in games, and you don't get a percentage of health
+            // but it is seen in battle simulators.
             // if their pokemons num is 1, the opponents pokemon is in the field pokemon2
             // if their pokemons num is 2, the opponents pokemon is in the field pokemon1
             // add the appropriate pokemons types
-            if (pokemon.getTeamNum() == 1) info += "\n" + pokemon2.getName() + " is a " + pokemon2.displayTypes();
-            else info += "\n" + pokemon1.getName() + " is a " + pokemon1.displayTypes();
+            // skip a line for readability
+            Individual opponent = pokemon.getTeamNum() == 1 ? pokemon2 : pokemon1;
+            info += "\n\nOpposing pokemon %s is a %s with %d percent health remaining".formatted(opponent.getName(),
+                    opponent.displayTypes(), opponent.getPercentHealth());
 
-            String[] back = {"Back"}; // the only option is back, to make an actual decision
+
+            String[] back = {"Back"}; // back to make a decision
             // show the window
             int choice = JOptionPane.showOptionDialog(null, info, "More Information",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, back, null);
 
-            if(choice == 0) return playerTurn(pokemon, turns, team); // if the choose back, just call the method again -- recursion.
 
+            if (choice == 0) return playerTurn(pokemon, turns, team); // if the choose back, just call the method again -- recursion.
         }
 
-        // we know they want to switch
-        // because of this right to left nonsense, we're counting from the right
-        // so the index for switch is still one like in the array, but from the pane you would think its four.
+
         // wants to switch
-        ArrayList<String> teamPokemon = new ArrayList<String>(); // create an arraylist of strings
+        ArrayList<String> teamPokemon = new ArrayList<>(); // create an arraylist of strings
         // the player wants to switch
         teamPokemon.add("Back"); // add a back option so they are not locked into switching
         // make back the first option because we want it to appear as the last
@@ -267,18 +276,12 @@ public class Battle {
 
         // if they choose back, just call the method again -- recursion.
         // we need to check it like this, because the index of back changes based on how many pokemon are alive
-        if (((String) optionsFinal[switchPokemon]).equals("Back")) return playerTurn(pokemon, turns, team);
+        if (optionsFinal[switchPokemon].equals("Back")) return playerTurn(pokemon, turns, team);
         String name = (String) optionsFinal[switchPokemon];
         for(Individual poke : team) { // go through the names of each pokemon in the team
             if(name.equals(poke.getName())) return poke; // if there is a match, return the pokemon.
         }
-
-
-
-
-        return null; // never actually used, we just need something here
-
-
+        return null;
     }
 
 

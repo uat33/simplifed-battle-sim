@@ -27,7 +27,7 @@ public class Main {
                 
                 Players should be reading the console and the JavaFX window for all necessary information.
                 
-                The JavaFX window is there to keep all information about the player's team that the other player should not be able to see.
+                The JOption window is there to keep all information about the player's team that the other player should not be able to see.
                 """);
 
         Setup set = new Setup(); // create the setup object, all the setup is done in that class

@@ -33,23 +33,23 @@ public class StatChange{
         // even though it is slower we have to change the stats one stage at a time
         // otherwise if we are 1 below the limit, the stat could be raised two stages and that is not allowed
         for(int i = 0; i < stages; i++) {
-            if(checkLimit(raise, pokemon.getStatCodes()[stat])) { // if this evaluates to true, then the stat can be changed.otherwise we do nothing
+            if(checkLimit(raise, pokemon.getStatCodes()[stat])) { // if this evaluates to true, then the stat can be changed
 
                 int[] statCodes = pokemon.getStatCodes();
                 if (raise) statCodes[stat]++;
                 else statCodes[stat]--;
-                pokemon.setStatCodes(statCodes);
+                pokemon.recalculate(); // need to recalculate stats
+
             }
             else{
-                String statName = "";
-
-                switch(stat){
-                    case 1 -> statName = "Attack";
-                    case 2 -> statName = "Defense";
-                    case 3 -> statName = "Special Attack";
-                    case 4 -> statName = "Special Defense";
-                    case 5 -> statName = "Speed";
-                }
+                String statName = switch(stat){
+                    case 1 -> "Attack";
+                    case 2 -> "Defense";
+                    case 3 -> "Special Attack";
+                    case 4 -> "Special Defense";
+                    case 5 -> "Speed";
+                    default -> throw new IllegalStateException("Unexpected value: " + stat);
+                };
 
                 System.out.printf("%s's %s cannot be %s anymore.\n", pokemon.getName(), statName,
                         raise ? "raised" : "lowered");
@@ -215,6 +215,7 @@ public class StatChange{
 
     // we need to tell the user these changes happened.
     // sharp and harsh are the quantifiers for two stages
+    // overload the methods
     public static void change(String name, String stat, String verb, String quantifier) {
         System.out.printf("%s's %s %s %s.\n", name, stat, verb, quantifier);
     }

@@ -27,7 +27,7 @@ public abstract class Species implements PokemonInterface {
     private final int[] baseStats;
 
 
-    // just do the constructor here, so we don't have to do it later.
+    // constructor here, so we can use super
     public Species(String name, ArrayList<Type> types, int[] baseStats) {
         this.name = name;
         this.types = types;
@@ -55,7 +55,7 @@ public abstract class Species implements PokemonInterface {
 
     public String displayTypes() {  // we want to be able to call this method, and return the type's of the pokemon in a readable manner.
         String typeText = types.get(0).getTypeName();
-        return types.size() == 1 ? typeText : typeText +  " and " + types.get(1).getTypeName();
+        return types.size() == 1 ? typeText + " type" : typeText +  " and " + types.get(1).getTypeName() + " type";
     }
 
     public String toString() {

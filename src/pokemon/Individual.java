@@ -43,7 +43,7 @@ public class Individual extends Species{
     // the stat changes
     // the default multiplier is one, and we want this to be the index of the array in PokemonInterface so 6's across the board for now
     private int[] statCodes = {6, 6, 6, 6, 6, 6, 6};
-    // the first 5 are attack - speed. 6 and 7 are accuracy and evasion, which for the purposes of alteration work the same as the other stats.
+    // the first 5 are attack, def, spattack, spdef, speed. 6 and 7 are accuracy and evasion, which for the purposes of alteration work the same as the other stats.
 
 
     // the nature multipliers
@@ -72,14 +72,17 @@ public class Individual extends Species{
         // the appropriate multiplier will now be used.
         natures(natureCodes, nature);
 
-        this.stats = this.startingStats = statCalcs();
+        this.stats = statCalcs();
+        this.startingStats = this.stats.clone(); // keep it separate so we can change one without changing the other
         this.maxHP = stats[0]; // keep track of max hp so we can tell players what it is.
 
 
     }
 
 
-
+    public int getPercentHealth(){
+        return (int) Math.round((double) stats[0] / maxHP * 100);
+    }
 
 
     // here's the method to calculate the stats.
@@ -88,7 +91,7 @@ public class Individual extends Species{
         int[] stats = new int[6]; // array to hold the 6 stats
         int[] baseStats = getBaseStats();
 
-        for(int i = 0; i < 6; i++) { // can do the other five like this
+        for(int i = 0; i < 6; i++) {
 
             // common among all stats
             int stat = ((2 * baseStats[i] + ivs[i] + evs[i] / 4) * level) / 100;
@@ -120,6 +123,8 @@ public class Individual extends Species{
     public double getAccuracy() {
         return accuracy;
     }
+
+
 
 
     public void setAccuracy(int accuracy) {
@@ -157,13 +162,13 @@ public class Individual extends Species{
 
 
 
-    public void setStatCodes(int[] statCodes) { // just setting the statcodes does nothing
-
-        this.statCodes = statCodes;
+    public void recalculate() { // just setting the statcodes does nothing
 
         // we also need to recalculate stats when this happens
-        for (int i = 0; i < startingStats.length; i++){
-            stats[i] = startingStats[i] * statCodes[i];
+        // start at 1 because hp never needs recalculation
+        for (int i = 1; i < startingStats.length; i++){
+            System.out.println(startingStats[i] + " " + statCodes[i]);
+            stats[i] = (int) (startingStats[i] * statChangesOne[statCodes[i]]);
         }
 
     }
@@ -182,10 +187,8 @@ public class Individual extends Species{
 
 
     public void pokemonStatus() { // inform players the status of this pokemon
-        System.out.println(); // skip lines
-        System.out.println(getName() + ", Health Remaining: " + stats[0] + "/" + maxHP);
-
-
+        System.out.println(); // skip
+        System.out.printf("%s, Health remaining: %d%%\n", getName(), getPercentHealth());
     }
 
 

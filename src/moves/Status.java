@@ -28,13 +28,9 @@ public class Status extends Move{
     public void purpose(Individual user, Individual target) {
         // this method is universal to all status moves. we want to be able to call it and have it always do the right thing.
 
-        if (getPp() == 0) {
-            System.out.println("No more PP for this move.");
-            return;
-        }
 
         System.out.println(user.getName() + " used " + getName());
-        if(!accuracyCheck(user, target)) { // check if the move misses
+        if(!accuracyCheck(user, target)) { // check if the move misses. update pp at the same time within that method
             System.out.println("The attack missed.");
             return;
         }
@@ -42,7 +38,7 @@ public class Status extends Move{
         System.out.println(user.getName() + " used " + moveName); // let the players know which move was used.
 
         switch (moveName) { // take the move's name into the switch statement, so we can match to appropriate case
-            case "Acupressure" -> {    // this move is annoying. it picks a random stat, and raises it two stages.
+            case "Acupressure" -> {    // this picks a random stat, and raises it two stages.
                 Random rand = new Random();
                 Acupressure(user, rand.nextInt(7)); // make a method, cause it requires a lot of code.
             }
@@ -57,7 +53,6 @@ public class Status extends Move{
 
 
             // moves that raise defense two stages
-            // this move raises defense stat two stages
             case "Iron Defense", "Acid Armor", "Barrier" -> StatChange.TwoDefenseRaise(user);
 
             // tail glow and cotton guard are their own category
@@ -69,10 +64,10 @@ public class Status extends Move{
                     StatChange.TwoSpAttRaise(user);
 
             // moves that raise special defense two stages
-            case "Amnesia" ->    // raise special defense two stages.
+            case "Amnesia" ->
                     StatChange.TwoSpDefRaise(user);
 
-            // moves that raise accuracy two stages
+            // moves that raise accuracy two stages: none
 
             // moves that raise evasion two stages
             case "Minimize" -> // raise evasion two stages.
