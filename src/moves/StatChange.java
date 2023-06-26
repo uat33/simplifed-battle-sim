@@ -6,7 +6,7 @@ import pokemon.Individual;
  * This class is just for organizational purposes.
  * A common application for status moves is to have them change stats
  * This class contains everything necessary for that.
- *  all methods are static so they can be accessed without an object.
+ *  all methods are static, so they can be accessed without an object.
  *  There's a lot of stuff here, but the point is we want to just be able to say StatChange.(method) and have it do everything.
  *  this does that.
  */
@@ -14,14 +14,14 @@ public class StatChange{
 
     // stats can only be raised or lowered to a max of 6 stages. make sure this limit is not surpassed
     public static boolean checkLimit(boolean raise, int stage) {
-        return raise ? stage != 12 : stage != 0;
-       // if trying to raise, stage cannot be 12
-       // otherwise we are trying to lower and stage cannot be 0
+        return raise ? stage != 6 : stage != -6;
+       // if trying to raise, stage cannot be 6
+       // otherwise we are trying to lower and stage cannot be -6
 
     }
 
 
-    // pokemon is the pokemon.
+    // pokemon is the pokemon whose stats we are changing
     // if the stat needs to go up, raise is true
     // otherwise its false
     // stages is always 1 or 2. it's how many times the stat needs to go up or down
@@ -33,9 +33,10 @@ public class StatChange{
         // even though it is slower we have to change the stats one stage at a time
         // otherwise if we are 1 below the limit, the stat could be raised two stages and that is not allowed
         for(int i = 0; i < stages; i++) {
-            if(checkLimit(raise, pokemon.getStatCodes()[stat])) { // if this evaluates to true, then the stat can be changed
+            int[] statCodes = pokemon.getStatCodes();
+            if(checkLimit(raise, statCodes[stat])) { // if this evaluates to true, then the stat can be changed
 
-                int[] statCodes = pokemon.getStatCodes();
+
                 if (raise) statCodes[stat]++;
                 else statCodes[stat]--;
                 pokemon.recalculate(); // need to recalculate stats

@@ -14,8 +14,11 @@ import java.util.Arrays;
 
 public class Individual extends Species{
 
+
+
+
     private final int[] evs;
-    private double accuracy = 100, evasion = 100;
+//    private double accuracy = 100, evasion = 100;
 
     // stats can be increased or decreased throughout a battle
     // the default multiplier is one, we can alter it here.
@@ -42,13 +45,13 @@ public class Individual extends Species{
 
     // the stat changes
     // the default multiplier is one, and we want this to be the index of the array in PokemonInterface so 6's across the board for now
-    private int[] statCodes = {6, 6, 6, 6, 6, 6, 6};
+    private final int[] statCodes = {0, 0, 0, 0, 0, 0, 0};
     // the first 5 are attack, def, spattack, spdef, speed. 6 and 7 are accuracy and evasion, which for the purposes of alteration work the same as the other stats.
 
 
     // the nature multipliers
     // default is 1
-    private double[] natureCodes = {1, 1, 1, 1, 1};
+    private final double[] natureCodes = {1, 1, 1, 1, 1};
 
     // take constructor from super class.
     public Individual(String name, ArrayList<Type> types, int[] baseStats, String nature, Move[] moves, int evs[], int teamNum) {
@@ -75,6 +78,29 @@ public class Individual extends Species{
         this.stats = statCalcs();
         this.startingStats = this.stats.clone(); // keep it separate so we can change one without changing the other
         this.maxHP = stats[0]; // keep track of max hp so we can tell players what it is.
+        generateStatCodes();
+
+    }
+
+    public void generateStatCodes(){
+        // if the codes have been generated, return as we don't need to do it again
+        if (! statChanges.isEmpty()) return;
+        double start1 = 4.0;
+        double start2 = 9.0;
+        for (int i = -6; i < 0; i++){
+            statChanges.put(i, 1/start1);
+            statChangesAccEvasion.put(i, 3/start2);
+            start1 -= 0.5;
+            start2 -= 1.0;
+        }
+        start1 = 1.0;
+        start2 = 3.0;
+        for (int i = 0; i <= 6; i++){
+            statChanges.put(i, start1);
+            statChangesAccEvasion.put(i, start2/3.0);
+            start1 += 0.5;
+            start2 += 1.0;
+        }
 
 
     }
@@ -106,13 +132,13 @@ public class Individual extends Species{
 
         }
 
-//        accuracy *= statChangesTwo[statCodes[5]];
-//        evasion *= statChangesTwo[statCodes[6]];
-
-
         return stats; // return it
     }
 
+    // return whether or not the pokemon still has pp for any of its moves
+    public boolean hasPP(){
+        return Arrays.stream(moves).anyMatch(x -> x.getPp() > 0);
+    }
 
     // getters and setters
 
@@ -120,27 +146,9 @@ public class Individual extends Species{
         return teamNum;
     }
 
-    public double getAccuracy() {
-        return accuracy;
+    public int[] getStartingStats() {
+        return startingStats;
     }
-
-
-
-
-    public void setAccuracy(int accuracy) {
-        this.accuracy = accuracy;
-    }
-
-    public double getEvasion() {
-        return evasion;
-    }
-
-    public void setEvasion(int evasion) {
-        this.evasion = evasion;
-    }
-
-
-
 
     public int[] getStats() {
         return stats;
@@ -152,6 +160,9 @@ public class Individual extends Species{
     }
 
 
+    public int getMaxHP(){
+        return maxHP;
+    }
 
 
 
@@ -167,21 +178,43 @@ public class Individual extends Species{
         // we also need to recalculate stats when this happens
         // start at 1 because hp never needs recalculation
         for (int i = 1; i < startingStats.length; i++){
-            System.out.println(startingStats[i] + " " + statCodes[i]);
-            stats[i] = (int) (startingStats[i] * statChangesOne[statCodes[i]]);
+            stats[i] = (int) (startingStats[i] * statChanges.get(statCodes[i - 1]));
         }
 
     }
 
 
 
+    private String displayStats(){
+        String[] changes = new String[5]; // we want to show the stat changes if there are any
+        for (int i = 0; i < 5; i++){ // 5 stats that can be changed
+            int statChange = statCodes[i]; // create a variable so we don't keep accessing
+            if (statChange != 0){ // if there is a change, do the appropriate formatting
+                changes[i] = statChange > 0 ? "(+%d)".formatted(statChange) : "(%d)".formatted(statChange);
+            }
+            else{ // empty string if there is no change
+                changes[i] = "";
+            }
+        }
+        // return the string
+        return String.format("""
+
+                Health: %d / %d
+                Attack: %d %s
+                Defense: %d %s
+                Special Attack: %d %s
+                Special Defense: %d %s
+                Speed: %d %s""", stats[0], maxHP, stats[1], changes[0],
+                stats[2], changes[1], stats[3], changes[2], stats[4], changes[3], stats[5], changes[4]);
+
+
+    }
 
 
     public String toString() { // when we call this, we want all the info the user could want on the pokemon displayed in a readable way
-        return super.toString() + "\nNature: " + nature + "\nHealth: " + stats[0] + " / " + maxHP + "\nAttack: " + stats[1] + "\nDefense: " + stats[2]
-                + "\nSpecial Attack: " + stats[3] + "\nSpecial Defense: " + stats[4]
-                + "\nSpeed: " + stats[5];
+        return super.toString() + "\nNature: " + nature + displayStats();
     }
+
 
 
 
@@ -194,11 +227,10 @@ public class Individual extends Species{
 
 
     // we're going to make a custom get moves method
-    // the default one can't be understood due to moves being of type Type. thats kind of confusing.
+    // the default one can't be understood due to containing all the type matchups
     // we can't just use moves.toString() cause there are four of them. so we have to add those together.
     // we want this method to give extra information on the moves.
 
-    // some setters are not there, because they will never be used
     public StringBuilder getMoves() {
 
         StringBuilder moveString = new StringBuilder();
@@ -215,7 +247,8 @@ public class Individual extends Species{
     // when a pokemon is switched out, statCodes reset to the default value, 6
     public void switchPokemonOut() {
 
-        Arrays.fill(statCodes, 6);
+        Arrays.fill(statCodes, 0);
+        recalculate(); // recalculate so stats go back to their base stats
 
         System.out.println(getName() + " is switched out."); // let the players know what's happening
     }

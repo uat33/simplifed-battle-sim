@@ -151,8 +151,6 @@ public class Battle {
     public static Individual newPokemon (Individual target, ArrayList<Individual> team) {  // takes the pokemon that died and its team as parameters
         System.out.println(target.getName() + " fainted."); // let the players know whats happening.
 
-        // remove the pokemon from the team
-        Setup.removePokemon(target); // use the method in setup
 
         String[] names = new String[team.size()]; // different sizes possible based on how many pokemon are left
 
@@ -194,8 +192,16 @@ public class Battle {
 
 
         // create our array of choices for the user
-        String[] options = {"More Info", "Switch out", pokemon.moves[0].toString(), pokemon.moves[1].toString()
-                , pokemon.moves[2].toString(), pokemon.moves[3].toString()};
+
+        String[] options;
+        if (pokemon.hasPP()) {
+            options = new String[]{"More Info", "Switch out", pokemon.moves[0].toString(), pokemon.moves[1].toString()
+                    , pokemon.moves[2].toString(), pokemon.moves[3].toString()};
+        }
+        else{
+            options = new String[]{"More Info", "Switch out", "Struggle"};
+        }
+
 
         // I have no idea why, but it shows options in reverse order in the pane
         // so i looked it up, and apparently this is a thing in macOS
@@ -210,6 +216,9 @@ public class Battle {
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, null);
         // returnValue is the index of what the user chose, hidden from the other player.
 
+        if (returnValue == 2 && options.length == 3){ // if struggle is an option and they chose it
+           // ADD STRUGGLE CODE
+        }
 
         if (returnValue > 1) {
             if (pokemon.moves[returnValue - 2].getPp() == 0){

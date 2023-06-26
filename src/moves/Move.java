@@ -2,6 +2,7 @@ package moves;
 
 
 import pokemon.Individual;
+import pokemon.PokemonInterface;
 import type.Type;
 
 import java.util.Random;
@@ -57,15 +58,25 @@ public abstract class Move{
 
     public boolean accuracyCheck(Individual user, Individual target) {
         ppUpdate(); // even if the move misses, the pp must be decremented
-        if (accuracy.equals("—")) return true;
+        if (accuracy.equals("—")) return true; // a move that always hits
 
-        double acc = Integer.parseInt(accuracy) * user.getAccuracy() * target.getEvasion();
+        // accuracy changes
+        // this is more complex than it appears
+        // first subtract user accuracy stages and target evasion stages
+        int stageMultiplier =  user.getStatCodes()[5] -  target.getStatCodes()[6];
+        // probably to prevent excessive accuracy manipulation, this number is capped at -6 and +6
+        // anything below -6 is set to -6, anything above is set to 6
+        if (stageMultiplier < -6) stageMultiplier = -6;
+        else if (stageMultiplier > 6) stageMultiplier = 6;
+        // now what you do is take the accuracy of the move and multiply it with the accuracy multiplier of the stage we just calculated
+        double acc = Integer.parseInt(accuracy) * PokemonInterface.statChangesAccEvasion.get(stageMultiplier);
         Random rand = new Random();
 
         // get a random number between 1 and 100
 
         // if that number is less than or equal to our accuracy, it hits
         // otherwise the move misses.
+
         return rand.nextInt(100) + 1 <= acc;
 
     }

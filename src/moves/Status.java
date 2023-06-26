@@ -28,14 +28,13 @@ public class Status extends Move{
     public void purpose(Individual user, Individual target) {
         // this method is universal to all status moves. we want to be able to call it and have it always do the right thing.
 
+        String moveName = getName();
 
-        System.out.println(user.getName() + " used " + getName());
+        System.out.println(user.getName() + " used " + getName());// let the players know which move was used.
         if(!accuracyCheck(user, target)) { // check if the move misses. update pp at the same time within that method
             System.out.println("The attack missed.");
             return;
         }
-        String moveName = getName();
-        System.out.println(user.getName() + " used " + moveName); // let the players know which move was used.
 
         switch (moveName) { // take the move's name into the switch statement, so we can match to appropriate case
             case "Acupressure" -> {    // this picks a random stat, and raises it two stages.

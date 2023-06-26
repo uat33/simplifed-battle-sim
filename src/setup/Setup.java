@@ -28,6 +28,7 @@ public class Setup {
     public static ArrayList<Individual> team1 = new ArrayList<>(); // contains the first players team
     public static ArrayList<Individual> team2 = new ArrayList<>(); // contains the second players team
 
+    // a special move that we want to  be able to access from the battle class
 
     public Setup() throws IOException {
 
@@ -124,14 +125,14 @@ public class Setup {
             if (components[3].equals("Status")) { // move is a non-attacking move.
                 // take appropriate action
                 // create status move object
-                Status status = new Status(components[1], getType(components[2]), components[3], Integer.parseInt(components[4]), components[5], components[6]);
+                Status status = new Status(components[1], getTypeFromName(components[2]), components[3], Integer.parseInt(components[4]), components[5], components[6]);
                 fourMoves[i] = status; // add to array
 
 
             } else { // attacking move.
                 // appropriate action
                 // create attack move object
-                Attack attack = new Attack(components[1], getType(components[2]), components[3], Integer.parseInt(components[4]), components[5], components[6]);
+                Attack attack = new Attack(components[1], getTypeFromName(components[2]), components[3], Integer.parseInt(components[4]), components[5], components[6]);
                 fourMoves[i] = attack; // add to array
             }
 
@@ -169,9 +170,9 @@ public class Setup {
             // each pokemon can have one or two types.
             // since we don't necessarily know how many types, use an arraylist
 
-            types.add(getType(info[6])); // use the method to find the type object from its name
+            types.add(getTypeFromName(info[6])); // use the method to find the type object from its name
             if (info[7].length() > 0) { // if there is a second type
-                types.add(getType(info[7])); // add that as well.
+                types.add(getTypeFromName(info[7])); // add that as well.
             }
             // now we have everything
             // can create pokemon object
@@ -216,7 +217,7 @@ public class Setup {
     }
 
 
-    private static Type getType(String name) {
+    private static Type getTypeFromName(String name) {
         // get the type object in the types array from a name
 
         for (Type t : types) {
@@ -224,37 +225,6 @@ public class Setup {
         }
         return null;
     }
-
-
-    // recieves textfile with all moves, and the arraylist of types
-//	public static void moveSetup() throws FileNotFoundException {
-//
-//		// create file
-//		Scanner inFile = new Scanner(new File("textFiles/moves.txt"));
-//
-//		// create the arraylist of all the moves.
-//
-//		while(inFile.hasNextLine()) { // for each line in text file
-//			String[] components = inFile.nextLine().split("\t"); // split line into array
-//			if(components[3].equals("Status")){ // move is a non-attacking move.
-//				// take appropriate action
-//				// create status move object
-//				Status status = new Status(components[1], getType(components[2]), components[3], Integer.parseInt(components[4]), components[5], components[6]);
-//				moves.add(status); // add to array
-//
-//
-//			}
-//			else{ // attacking move.
-//				// appropriate action
-//				// create attack move object
-//				Attack attack = new Attack(components[1], getType(components[2]), components[3], Integer.parseInt(components[4]), components[5], components[6]);
-//				moves.add(attack); // add to array
-//			}
-//		}
-//
-//
-//
-//	}
 
 
     public static void removePokemon(Individual target) { // the pokemon to be removed, and the team it needs to be removed from.

@@ -15,8 +15,44 @@ public class Attack extends Move {
         super(name, type, category, pp, power, accuracy);
     }
 
+    // a special move that can only be used once you are out of pp for all of your moves
+    public void struggle(Individual user, Individual target){
 
-    public void purpose(Individual user, Individual target) throws InterruptedException {
+        System.out.println(user.getName() + " used Struggle");
+
+        // using a separate method because struggle bypasses accuracy checks and type matchups
+        Random rand = new Random();
+        boolean crit = rand.nextInt(16) == 15; // 1 in 16 chance that this will be 15
+        int att = crit && user.getStatCodes()[0] < 0 ? user.getStartingStats()[1] : user.getStats()[1]; // attack
+        int def = crit && target.getStatCodes()[1] > 0 ? target.getStartingStats()[2] : target.getStats()[2]; // defense
+
+        int damage = calculateDamage(50, att, def, crit);
+
+        // struggle deals one fourth of the user's max health as recoil damage
+
+        dealDamage(target, damage);
+        int recoil = user.getMaxHP() / 4;
+        dealDamage(user, recoil);
+
+    }
+
+    private int calculateDamage(int power, int att, int def, boolean crit){
+        int base = ((2 * PokemonInterface.level / 5 + 2) * power * att / def) / 50 + 2; // the base formula
+        Random rand = new Random();
+        // pokemon has a mechanic known as rolls or a range.
+        // once the damage is calculated, there are different amounts of damage it can do
+        // it is 85 percent to 100 percent of the damage, inclusive
+        // this means there are 16 possibilites for the damage, and it is completely random.
+
+
+        base *= (rand.nextInt(16) + 85) / 100.0; // random number from 0 to 15 has 85 added to it.
+        // multiply that with damage to get the final amount.
+        return crit ? base * 2 : base;
+
+    }
+
+
+    public void purpose(Individual user, Individual target) {
 
 
         System.out.println(user.getName() + " used " + getName());
@@ -31,32 +67,47 @@ public class Attack extends Move {
         // special moves use special attack and special defense.
         // there is one exception: psyshock uses special attack and physical defense
 
+        // critical hits. a 1/16 chance to deal twice the damage (as of gen 5, it's 1.5 in later games)
+        // critical hits also override any detrimental stat changes, but not beneficial ones
+
+        Random rand = new Random();
+
+        boolean crit = rand.nextInt(16) == 15; // 1 in 16 chance that this will be 15
+
+
         int att = 0, def = 0;
 
-
         if (getCategory().equals("Physical")) {
-
-            att = user.getStats()[1]; // attack
-            def = target.getStats()[2]; // defense
-
-        } else if (getName().equals("Psyshock")) { // psyshock is a special move still, so we can minimize the amount of times we check this by doing it here
-            att = user.getStats()[3]; // special attack
-            def = target.getStats()[2]; // defense
-        } else { // regular special move
-
-            att = user.getStats()[3]; // special attack
-            def = target.getStats()[4]; // defense
+            // the indices are strange here because statcodes doesn't have hp because that can't be lowered, whereas the other two arrays we have do have hp
+            // if it is a crit and the user's attack has been lowered
+            // use the startingstats attack
+            // otherwise use the normal attack
+            att = crit && user.getStatCodes()[0] < 0 ? user.getStartingStats()[1] : user.getStats()[1]; // attack
+            // if it is a crit and target's defense has been raised
+            // use startingstats defense
+            // otherwise use normal defense
+            def = crit && target.getStatCodes()[1] > 0 ? target.getStartingStats()[2] : target.getStats()[2]; // defense
 
         }
-        // seeing as we're here, this is an attacking move and power should be an int. so we can cast it
-        int damage = 2 * PokemonInterface.level / 5 + 2;
+        // similar logic here, but with physical defense and special attack
+        else if (getName().equals("Psyshock")) { // psyshock is a special move still, so we can minimize the amount of times we check this by doing it here
+            att = crit && user.getStatCodes()[2] < 0 ? user.getStartingStats()[3] : user.getStats()[3]; // special attack
+
+            def = crit && target.getStatCodes()[1] > 0 ? target.getStartingStats()[2] : target.getStats()[2]; // defense
+        }
+        else { // regular special move
+
+            att = crit && user.getStatCodes()[2] < 0 ? user.getStartingStats()[3] : user.getStats()[3]; // special attack
+            def = crit && target.getStatCodes()[3] > 0 ? target.getStartingStats()[2] : target.getStats()[4]; // special defense
+
+        }
+        int damage;
         if (getName().equals("Gyro Ball")) { // a special move, with a special way of calculating damage
-            damage = ((( damage * att * 25 * (target.getStats()[5] / user.getStats()[5]) / def) / 50) + 2);
+            damage = ((( (2 * PokemonInterface.level / 5 + 2) * att * 25
+                    * (target.getStats()[5] / user.getStats()[5]) / def) / 50) + 2);
         }
-        else damage = (((damage * att * Integer.parseInt(getPower()) / def) / 50) + 2);
-        // not done yet. the next part is tricky.
-
-
+        else damage = calculateDamage(Integer.parseInt(getPower()), att, def, crit);
+        // not done yet
 
         // there are two multipliers that have to do with type.
         // the first is same type attack bonus called STAB.
@@ -66,9 +117,8 @@ public class Attack extends Move {
 
         // if the moves type is equal to either of the user's types
         Type moveType = getType();
-        boolean stab = user.getTypes().contains(moveType);
 
-        if (stab) {
+        if (user.getTypes().contains(moveType)) {
             damage *= 1.5; // multiply damage by 1.5 if stab is true
         }
 
@@ -87,20 +137,12 @@ public class Attack extends Move {
         damage *= typeMult; // multiply damage by typeMultiplier
 
 
-        // pokemon has a mechanic known as rolls or a range.
-        // once the damage is calculated, there are different amounts of damage it can do
-        // it is 85 percent to 100 percent of the damage, inclusive
-        // this means there are 16 possibilites for the damage, and it is completely random.
 
-        Random rand = new Random();
-
-        damage *= (rand.nextInt(16) + 85) / 100.0; // random number from 0 to 15 has 85 added to it.
-        // multiply that with damage to get the final amount.
 
 
         // tell users what happened
         // depending on how the types stack up, sometimes text is printed here
-        Thread.sleep(500); // we want a gap, so it flows better
+//        Thread.sleep(500); // we want a gap, so it flows better
 
         // have to output text based on the typemultiplier
         // 1 means no text
@@ -114,24 +156,31 @@ public class Attack extends Move {
 
         // certain moves lower your stats after using them
 
-        if (getName().equals("Overheat") || getName().equals("Leaf Storm") || getName().equals("Draco Meteor")) {
-            StatChange.TwoSpAttDrop(user); // these moves lower your spA two stages
-
-        } else if (getName().equals("Close Combat")) { // - 1 def, - 1 spDef
-            StatChange.OneDefenseDrop(user);
-            StatChange.OneSpDefDrop(user);
-
-        } else if (getName().equals("Superpower")) { // - 1 att, -1 def
-            StatChange.OneAttackDrop(user);
-            StatChange.OneDefenseDrop(user);
-        } else if (getName().equals("Hammer Arm")) { // -1 speed
-            StatChange.OneSpeedDrop(user);
-
+        switch (getName()) {
+            case "Overheat", "Leaf Storm", "Draco Meteor" ->
+                    StatChange.TwoSpAttDrop(user); // these moves lower your spA two stages
+            case "Close Combat" -> {  // - 1 def, - 1 spDef
+                StatChange.OneDefenseDrop(user);
+                StatChange.OneSpDefDrop(user);
+            }
+            case "Superpower" -> {  // - 1 att, -1 def
+                StatChange.OneAttackDrop(user);
+                StatChange.OneDefenseDrop(user);
+            }
+            case "Hammer Arm" ->  // -1 speed
+                    StatChange.OneSpeedDrop(user);
         }
 
         // if the pokemon dies, you're not supposed to reveal how much damage the move does.
         // so take that into account;
-        Thread.sleep(500); // we want a gap, so it flows better
+//        Thread.sleep(500); // we want a gap, so it flows better
+
+
+
+        dealDamage(target, damage); // delegate to method so struggle can also use it
+    }
+
+    public void dealDamage(Individual target, int damage){
 
         if (target.getStats()[0] - damage <= 0) { // the pokemon has fainted
             System.out.println(target.getName() + " lost " + target.getStats()[0] + " HP.");
@@ -142,14 +191,16 @@ public class Attack extends Move {
 
             // but only if they have pokemon left
 
-
+            Setup.removePokemon(target);
             if (target.getTeamNum() == 1) {
                 if (Setup.team1.size() > 0) {
+
                     Battle.pokemon1 = Battle.newPokemon(target, Setup.team1);
                     Battle.pokemon1.switchPokemonIn();
                 }
 
-            } else {
+            }
+            else {
                 if (Setup.team2.size() > 0) {
                     Battle.pokemon2 = Battle.newPokemon(target, Setup.team2);
                     Battle.pokemon2.switchPokemonIn();
@@ -163,6 +214,7 @@ public class Attack extends Move {
         // now to deal the damage.
         target.getStats()[0] -= damage;
 
-
     }
+
+
 }
