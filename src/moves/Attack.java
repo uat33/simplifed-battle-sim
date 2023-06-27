@@ -15,26 +15,6 @@ public class Attack extends Move {
         super(name, type, category, pp, power, accuracy);
     }
 
-    // a special move that can only be used once you are out of pp for all of your moves
-    public void struggle(Individual user, Individual target){
-
-        System.out.println(user.getName() + " used Struggle");
-
-        // using a separate method because struggle bypasses accuracy checks and type matchups
-        Random rand = new Random();
-        boolean crit = rand.nextInt(16) == 15; // 1 in 16 chance that this will be 15
-        int att = crit && user.getStatCodes()[0] < 0 ? user.getStartingStats()[1] : user.getStats()[1]; // attack
-        int def = crit && target.getStatCodes()[1] > 0 ? target.getStartingStats()[2] : target.getStats()[2]; // defense
-
-        int damage = calculateDamage(50, att, def, crit);
-
-        // struggle deals one fourth of the user's max health as recoil damage
-
-        dealDamage(target, damage);
-        int recoil = user.getMaxHP() / 4;
-        dealDamage(user, recoil);
-
-    }
 
     private int calculateDamage(int power, int att, int def, boolean crit){
         int base = ((2 * PokemonInterface.level / 5 + 2) * power * att / def) / 50 + 2; // the base formula
@@ -56,7 +36,8 @@ public class Attack extends Move {
 
 
         System.out.println(user.getName() + " used " + getName());
-        if (!accuracyCheck(user, target)) { // check if the move misses. update pp at the same time within that method
+        // struggle bypasses accuracy checks, pp decrements and everything related to types
+        if (!getName().equals("Struggle") && !accuracyCheck(user, target)) { // check if the move misses. update pp at the same time within that method
             System.out.println("The attack missed.");
             return;
         }
@@ -107,6 +88,24 @@ public class Attack extends Move {
                     * (target.getStats()[5] / user.getStats()[5]) / def) / 50) + 2);
         }
         else damage = calculateDamage(Integer.parseInt(getPower()), att, def, crit);
+
+        // if the move is struggle
+        if (getName().equals("Struggle")){
+            dealDamage(target, damage);
+            // struggle deals 1/4 of the user's health as recoil damage
+            int recoil = user.getMaxHP() / 4;
+            if (user.getStats()[0] <= recoil){
+                System.out.println(user.getName() + " lost " + user.getStats()[0] + " HP from recoil damage.");
+                newPokemon(user);
+            }
+            else{
+                System.out.println(user.getName() + " lost " + recoil + " HP from recoil damage.");
+                user.getStats()[0] -= recoil;
+            }
+
+            return;
+        }
+
         // not done yet
 
         // there are two multipliers that have to do with type.
@@ -180,6 +179,29 @@ public class Attack extends Move {
         dealDamage(target, damage); // delegate to method so struggle can also use it
     }
 
+    // make this a method so it can be used for struggle too
+    private void newPokemon(Individual target){
+        // prompt the correct user to send out another pokemon
+
+        // but only if they have pokemon left
+
+        Setup.removePokemon(target);
+        if (target.getTeamNum() == 1) {
+            if (Setup.team1.size() > 0) {
+                Battle.pokemon1 = Battle.newPokemon(target, Setup.team1);
+                Battle.pokemon1.switchPokemonIn();
+            }
+
+        }
+        else {
+            if (Setup.team2.size() > 0) {
+                Battle.pokemon2 = Battle.newPokemon(target, Setup.team2);
+                Battle.pokemon2.switchPokemonIn();
+            }
+
+        }
+    }
+
     public void dealDamage(Individual target, int damage){
 
         if (target.getStats()[0] - damage <= 0) { // the pokemon has fainted
@@ -187,26 +209,8 @@ public class Attack extends Move {
             // telling the player how much damage it did when it killed is more information than is given in a pokemon game
             // so we do it like this. if it is going to kill, we just output the current health as the damage done.
 
-            // prompt the correct user to send out another pokemon
-
-            // but only if they have pokemon left
-
-            Setup.removePokemon(target);
-            if (target.getTeamNum() == 1) {
-                if (Setup.team1.size() > 0) {
-
-                    Battle.pokemon1 = Battle.newPokemon(target, Setup.team1);
-                    Battle.pokemon1.switchPokemonIn();
-                }
-
-            }
-            else {
-                if (Setup.team2.size() > 0) {
-                    Battle.pokemon2 = Battle.newPokemon(target, Setup.team2);
-                    Battle.pokemon2.switchPokemonIn();
-                }
-
-            }
+            // call the new Pokemon method
+            newPokemon(target);
 
         } else {
             System.out.println(target.getName() + " lost " + damage + " HP.");

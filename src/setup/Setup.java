@@ -217,7 +217,7 @@ public class Setup {
     }
 
 
-    private static Type getTypeFromName(String name) {
+    public static Type getTypeFromName(String name) {
         // get the type object in the types array from a name
 
         for (Type t : types) {

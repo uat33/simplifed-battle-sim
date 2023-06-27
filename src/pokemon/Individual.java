@@ -1,7 +1,9 @@
 package pokemon;
 
+import moves.Attack;
 import moves.Move;
 import type.Type;
+import setup.Setup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +54,9 @@ public class Individual extends Species{
     // the nature multipliers
     // default is 1
     private final double[] natureCodes = {1, 1, 1, 1, 1};
+
+    // struggle
+    public static final Attack struggle = new Attack("Struggle", Setup.getTypeFromName("Normal"), "Physical", 1, "50", "—");
 
     // take constructor from super class.
     public Individual(String name, ArrayList<Type> types, int[] baseStats, String nature, Move[] moves, int evs[], int teamNum) {

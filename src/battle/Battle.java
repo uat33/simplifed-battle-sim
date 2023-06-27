@@ -217,7 +217,7 @@ public class Battle {
         // returnValue is the index of what the user chose, hidden from the other player.
 
         if (returnValue == 2 && options.length == 3){ // if struggle is an option and they chose it
-           // ADD STRUGGLE CODE
+            return Individual.struggle;
         }
 
         if (returnValue > 1) {
