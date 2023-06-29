@@ -51,10 +51,6 @@ public class Battle {
         System.out.println(); // spacing
 
 
-
-
-
-
         do {
             // print out the turn number in the console
             // this is done in battle sims, because players should be able to scroll up and see what's happened previously

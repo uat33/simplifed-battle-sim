@@ -28,6 +28,7 @@ public class Setup {
     public static ArrayList<Individual> team1 = new ArrayList<>(); // contains the first players team
     public static ArrayList<Individual> team2 = new ArrayList<>(); // contains the second players team
 
+
     // a special move that we want to  be able to access from the battle class
 
     public Setup() throws IOException {
@@ -44,10 +45,10 @@ public class Setup {
         moves = l.split("\n"); // split into an array where each entry is a move
         // sort that array in alphabetical order by the name of the move
         Comparator<String> comp = (String a, String b) -> {
-            int start1 = a.indexOf("\t") + 1;
-            int end1 = a.indexOf("\t", start1);
-            int start2 = b.indexOf("\t") + 1;
-            int end2 = b.indexOf("\t", start2);
+            int start1 = a.indexOf("\t") + 1; // start of the move name
+            int end1 = a.indexOf("\t", start1); // end of the move name
+            int start2 = b.indexOf("\t") + 1; // start of the move name
+            int end2 = b.indexOf("\t", start2); // end of the move name
             return a.substring(start1, end1).compareTo(b.substring(start2, end2));
         };
 

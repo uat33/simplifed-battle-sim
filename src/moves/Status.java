@@ -8,7 +8,6 @@ import java.util.Random;
 
 /*
  * A subclass of move. this is where all the status moves are stored as they need to be separated from the attacking moves.
- * This class is a nightmare to make because status moves are a very broad term.
  * All status moves don't deal direct damage, but that's all they have in common.
  * In terms of function, they are very varied and have little in common with each other
  * Unfortunately, in many cases there is no way to do this than to literally make methods for each status move.
@@ -26,7 +25,7 @@ public class Status extends Move{
 
     @Override
     public void purpose(Individual user, Individual target) {
-        // this method is universal to all status moves. we want to be able to call it and have it always do the right thing.
+        // this method is universal to all moves. we want to be able to call it and have it always do the right thing.
 
         String moveName = getName();
 

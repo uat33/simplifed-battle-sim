@@ -31,7 +31,7 @@ public class Attack extends Move {
 
     }
 
-
+    @Override
     public void purpose(Individual user, Individual target) {
 
 

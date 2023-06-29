@@ -58,6 +58,30 @@ public class Individual extends Species{
     // struggle
     public static final Attack struggle = new Attack("Struggle", Setup.getTypeFromName("Normal"), "Physical", 1, "50", "—");
 
+    // initialize the stat change codes
+    // we only want this to run once
+    // so use a static initializer
+    // this will allow us to keep track of stat changes
+    static {
+        double start1 = 4.0;
+        double start2 = 9.0;
+        for (int i = -6; i < 0; i++){
+            statChanges.put(i, 1/start1);
+            statChangesAccEvasion.put(i, 3/start2);
+            start1 -= 0.5;
+            start2 -= 1.0;
+        }
+        start1 = 1.0;
+        start2 = 3.0;
+        for (int i = 0; i <= 6; i++){
+            statChanges.put(i, start1);
+            statChangesAccEvasion.put(i, start2/3.0);
+            start1 += 0.5;
+            start2 += 1.0;
+        }
+    }
+
+
     // take constructor from super class.
     public Individual(String name, ArrayList<Type> types, int[] baseStats, String nature, Move[] moves, int evs[], int teamNum) {
 
@@ -83,33 +107,8 @@ public class Individual extends Species{
         this.stats = statCalcs();
         this.startingStats = this.stats.clone(); // keep it separate so we can change one without changing the other
         this.maxHP = stats[0]; // keep track of max hp so we can tell players what it is.
-        generateStatCodes();
 
     }
-
-    public void generateStatCodes(){
-        // if the codes have been generated, return as we don't need to do it again
-        if (! statChanges.isEmpty()) return;
-        double start1 = 4.0;
-        double start2 = 9.0;
-        for (int i = -6; i < 0; i++){
-            statChanges.put(i, 1/start1);
-            statChangesAccEvasion.put(i, 3/start2);
-            start1 -= 0.5;
-            start2 -= 1.0;
-        }
-        start1 = 1.0;
-        start2 = 3.0;
-        for (int i = 0; i <= 6; i++){
-            statChanges.put(i, start1);
-            statChangesAccEvasion.put(i, start2/3.0);
-            start1 += 0.5;
-            start2 += 1.0;
-        }
-
-
-    }
-
 
     public int getPercentHealth(){
         return (int) Math.round((double) stats[0] / maxHP * 100);
