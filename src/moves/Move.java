@@ -53,7 +53,6 @@ public abstract class Move{
     }
 
     // the functionality of the move
-    // false if the pp prevents its use, or it misses
     public abstract void purpose(Individual user, Individual target) throws InterruptedException;
 
     public boolean accuracyCheck(Individual user, Individual target) {

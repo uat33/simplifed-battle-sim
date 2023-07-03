@@ -8,6 +8,15 @@ import type.Type;
 
 import java.util.Random;
 
+
+/*
+* This class extends the move class, and consists of Attacking moves.
+*
+* Everything to do with dealing damage is done here.
+*
+*
+* */
+
 public class Attack extends Move {
 
 

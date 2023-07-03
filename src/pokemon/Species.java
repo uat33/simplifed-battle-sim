@@ -37,8 +37,7 @@ public abstract class Species implements PokemonInterface {
 
 
 
-
-
+    // necessary getters
     public String getName() {
         return name;
     }

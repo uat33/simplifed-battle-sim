@@ -41,9 +41,15 @@ public final class Type {
 		this.matchup = matchups(components);
 	}
 
+	/*
+	 * This method makes the hashmap containing all the matchups for a particular type
+	 * Parameters:
+	 *   line - the line containing the type info
+	 * */
 	private HashMap<String, Double> matchups(String[] line){
 		HashMap<String, Double> m = new HashMap<>();
-
+		// index 0 will contain type name
+		// index 1 till the end contains type matchups for that name
 		for (int i = 1; i < line.length; i++){
 			m.put(typeNames[i - 1], Double.parseDouble(line[i]));
 		}

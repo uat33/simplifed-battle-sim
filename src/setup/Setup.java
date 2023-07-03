@@ -17,18 +17,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+
+/*
+* This class is where all the setup to make the battle possible happens.
+*
+* */
 public class Setup {
 
-    // in gen 5, there are 17 types, each of which interact differently with each other
-    // we can use an array as the size of this will never change
+
 
     // these fields are all static as there should only be one per battle
 
     // create some constants so it's clear what these numbers mean
     final static int NUMBER_OF_TYPES = 17, NUMBER_OF_MOVES = 559, NUMBER_OF_POKEMON = 676, TEAM_SIZE = 6;
 
-
+    // in gen 5, there are 17 types, each of which interact differently with each other
+    // we can use an array as the size of this will never change
     private static final Type[] types = new Type[NUMBER_OF_TYPES];
+    // make a similar array for moves and pokemon
     private static String[] moves = new String[NUMBER_OF_MOVES];
     private static String[] pokemon = new String[NUMBER_OF_POKEMON];
     public static ArrayList<Individual> team1 = new ArrayList<>(TEAM_SIZE); // contains the first players team
@@ -46,14 +52,15 @@ public class Setup {
         typeSetup();
 
         // now setup the moves
-        // instead of making an object for all 559 moves
-        // we can just make objects for the 48 moves we use
-        // even if there are duplicates among the 48, we still need to make separate objects
-        // if we don't, then one pokemon using that move will reduce pp for all the pokemon using that move
+        // instead of making an object for all 559 moves, can just make objects for the 48 moves we use
+        // even if there are duplicates among the 48, still need to make separate objects
+        // if separate objects are not made, then one pokemon using that move will reduce pp for all the pokemon using that move
         String allMoves = Files.readString(Path.of("textFiles/moves.txt")); // read in the moves
         moves = allMoves.split("\n"); // split into an array where each entry is a move
-        // sort that array in alphabetical order by the name of the move
+        // next sort that array in alphabetical order by the name of the move
 
+        // make the comparator
+        // there are some extra steps here, as the name of the move is the second entry in the file
         Comparator<String> moveComp = (String a, String b) -> {
             int start1 = a.indexOf("\t") + 1; // start of the move name
             int end1 = a.indexOf("\t", start1); // end of the move name
@@ -61,9 +68,8 @@ public class Setup {
             int end2 = b.indexOf("\t", start2); // end of the move name
             return a.substring(start1, end1).compareTo(b.substring(start2, end2));
         };
-
-        Arrays.sort(moves, moveComp);
         // sorting it will make it faster to find our move -- we won't have to loop through up to 559 entries several times
+        Arrays.sort(moves, moveComp);
 
         // we can do something similar for the pokemon
         // instead of looping through up to 676 entries several times, we can sort it
@@ -94,12 +100,88 @@ public class Setup {
 
         // add the new text file numbers to the file path
         String teamFile = "textFiles/teamFiles/team";
-
+        // the second parameter is the team number
+        // player 1's team number is 1, player 2's team number is 2
         team1 = teamSetup(new Scanner(new File(teamFile + team1File)), 1);
         team2 = teamSetup(new Scanner(new File(teamFile + team2File)), 2);
 
     }
 
+
+    /*
+    * This method sets up a pokemon team.
+    *
+    * Parameters:
+    *   teamFile - the file containing out team
+    *   teamNum - the player this team belongs to
+    *
+    * */
+
+    public static ArrayList<Individual> teamSetup(Scanner teamFile, int teamNum) {
+        ArrayList<Individual> team = new ArrayList<>(TEAM_SIZE); // create arraylist we will return
+
+        while (teamFile.hasNextLine()) {
+            String pokemonName = teamFile.nextLine(); // the pokemon's name will be the next line
+
+            int[] evs = getEvs(teamFile.nextLine()); // get the evs from the method
+
+            String nature = (teamFile.nextLine().split(" ")[0]); // get the nature
+
+
+            Move[] fourMoves = getMoves(teamFile); // get the moves from the method
+
+
+            // use binarysearch to get the index of the pokemon
+            int index = Arrays.binarySearch(pokemon, pokemonName, (String a, String b) -> {
+                // since all the pokemon info is there, not just the name, we have to separate out the name
+                int start1 = a.indexOf(",") + 1;
+                int end1 = a.indexOf(",", start1);
+                return a.substring(start1, end1).compareTo(b);
+            });
+
+            String[] attributes = pokemon[index].split(","); // the attributes of the pokemon we are looking for
+
+
+            int[] baseStats = new int[6]; // create empty array for base stats
+
+            for (int i = 0; i < 6; i++) {
+                // the base start at index 5 of attributes
+                baseStats[i] = Integer.parseInt(attributes[i + 5]); // parse the base stats from the information array into ints and store them
+            }
+
+
+            ArrayList<Type> types = new ArrayList<>(2); // create an arraylist of type Type.
+            // this will hold the types for this pokemon.
+            // each pokemon can have one or two types.
+            // since we don't necessarily know how many types, use an arraylist
+
+            types.add(getTypeFromName(attributes[2])); // use the method to find the type object from its name
+            if (attributes[3].length() > 0) { // if there is a second type
+                types.add(getTypeFromName(attributes[3])); // add that as well.
+            }
+            // now we have everything
+            // can create pokemon object
+
+            Individual pokemon = new Individual(pokemonName, types, baseStats, nature, fourMoves, evs, teamNum); // create the object
+
+            team.add(pokemon); // add it to the team
+
+            teamFile.nextLine(); // skip a line b/w pokemon
+
+        }
+
+
+        return team; // return the team
+    }
+
+
+    /*
+    * This method makes the four move objects that every pokemon will have.
+    *
+    * Parameter: Scanner inFile, the teamfile for which we are creating the pokemon
+    *
+    *
+    * */
     public static Move[] getMoves(Scanner inFile) {
 
 
@@ -108,8 +190,9 @@ public class Setup {
             String moveName = inFile.nextLine().substring(2); // put each movename from the text file into a string
 
             // find the movename in the array using Arrays.binarySearch
-            // use a lambda expression for the comparator, needed because all the move info is in the moves array, not just the name
+            // use a lambda expression for the comparator
             int index = Arrays.binarySearch(moves, moveName, (String a, String b) -> {
+                // needed because all the move info is in the moves array, not just the name
                 int start1 = a.indexOf("\t") + 1;
                 int end1 = a.indexOf("\t", start1);
                 return a.substring(start1, end1).compareTo(b);
@@ -135,72 +218,19 @@ public class Setup {
     }
 
 
-    public static ArrayList<Individual> teamSetup(Scanner teamFile, int teamNum) {
-        ArrayList<Individual> team = new ArrayList<>(); // create arraylist we will return
 
-        while (teamFile.hasNextLine()) {
-            String pokemonName = teamFile.nextLine(); // the pokemon's name will be the next line
-
-            int[] evs = getEvs(teamFile.nextLine()); // get the evs from the method
-
-            String nature = (teamFile.nextLine().split(" ")[0]); // get the nature
-
-
-            Move[] fourMoves = getMoves(teamFile); // get the moves from the method
-
-
-            // use binarysearch to get the index of the pokemon
-            int index = Arrays.binarySearch(pokemon, pokemonName, (String a, String b) -> {
-                int start1 = a.indexOf(",") + 1; // since all the pokemon info is there, not just the name, we have to separate out the name
-                int end1 = a.indexOf(",", start1);
-                return a.substring(start1, end1).compareTo(b);
-            });
-
-            String[] information = new String[8];
-            String[] attributes = pokemon[index].split(","); // the attributes of the pokemon we are looking for
-            // the first six values match with what we need in terms of order
-            // copies over the 6 base stat values into information
-            System.arraycopy(attributes, 5, information, 0, 6);
-            // now we copy over the types
-            information[6] = attributes[2];
-            information[7] = attributes[3];
-
-            int[] baseStats = new int[6]; // create empty array for base stats
-
-            for (int i = 0; i < 6; i++) {
-                baseStats[i] = Integer.parseInt(information[i]); // parse the base stats from the information array into ints and store them
-            }
-
-
-            ArrayList<Type> types = new ArrayList<>(); // create an arraylist of type Type.
-            // this will hold the types for this pokemon.
-            // each pokemon can have one or two types.
-            // since we don't necessarily know how many types, use an arraylist
-
-            types.add(getTypeFromName(information[6])); // use the method to find the type object from its name
-            if (information[7].length() > 0) { // if there is a second type
-                types.add(getTypeFromName(information[7])); // add that as well.
-            }
-            // now we have everything
-            // can create pokemon object
-
-
-            Individual pokemon = new Individual(pokemonName, types, baseStats, nature, fourMoves, evs, teamNum); // create the object
-
-            team.add(pokemon); // add it to the team
-
-            teamFile.nextLine(); // skip a line b/w pokemon
-
-        }
-
-
-        return team; // return the team
-    }
-
-
-    // this method gets the evs from the text file and puts it into an array
-    // evs are to calculate stats.
-    // if unspecified, the value is always 0.
+    /*
+    *
+    *
+    * this method gets the evs from the text file and puts it into an array
+    * evs are to calculate stats.
+    * if unspecified, the value is always 0.
+    *
+    *
+    * Parameter:
+    *   - evLine, which is the line every pokemon has in the textfile specifying what its evs are
+    *
+    * */
     public static int[] getEvs(String evLine) { // all the ev values will be in one line
         String[] stats = {"HP", "Atk", "Def", "SpA", "SpD", "Spe"}; // these are the Strings used in the teamFiles to specify which stat has which ev
         int[] evs = new int[6]; // create the array
@@ -224,25 +254,41 @@ public class Setup {
     }
 
 
+    /*
+    * get the type object in the types array from a name
+    * Parameter:
+    *    name - the name of the type whose object we are looking for.
+    *
+    * */
     public static Type getTypeFromName(String name) {
-        // get the type object in the types array from a name
-
         for (Type t : types) {
             if (t.getTypeName().equals(name)) return t;
         }
         return null;
     }
 
-
-    public static void removePokemon(Individual target) { // the pokemon to be removed, and the team it needs to be removed from.
+    /*
+     * This method removes a pokemon from the game after it has been knocked out
+     * Parameters:
+     *   target - the pokemon that has been knocked out
+     *
+     * */
+    public static void removePokemon(Individual target) {
 
         // if the pokemon is part of team1, remove from team1
         // otherwise its in team 2 and do the same thing there
         if (target.getTeamNum() == 1) team1.remove(target);
         else team2.remove(target);
-
     }
 
+
+    /*
+    *
+    * Sets up the types array
+    *
+    * does this by reading in the typematchups file, and calling the type constructor for each line
+    *
+    * */
 
     private void typeSetup() throws FileNotFoundException {
         // read in the file with the type matchups

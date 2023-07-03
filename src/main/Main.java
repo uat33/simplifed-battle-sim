@@ -25,7 +25,7 @@ public class Main {
                 Players will take turns choosing what to do, there will be 3 seconds in between turns for players to pass the computer
                 to the other player.
                 
-                Players should be reading the console and the JavaFX window for all necessary information.
+                Players should be reading the console and the window for all necessary information.
                 
                 The JOption window is there to keep all information about the player's team that the other player should not be able to see.
                 """);

@@ -39,7 +39,7 @@ public class Battle {
 
 
         // in random battles, a random pokemon is chosen from both teams and sent out.
-        // so get a random number from 0 to 5 for each team, and set pokemon1 and pokemon2 to the pokemon in that slot in the team objects from the setup class
+        // so get a random pokemon from each team, and set pokemon1 and pokemon2 to the pokemon in that slot in the team objects from the setup class
         pokemon1 = Setup.team1.get(rand.nextInt(Setup.team1.size()));
         pokemon2 = Setup.team2.get(rand.nextInt(Setup.team2.size()));
 
@@ -63,10 +63,10 @@ public class Battle {
             pokemon1.pokemonStatus();
             System.out.println(); // skip lines
             pokemon2.pokemonStatus();
-            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
+//            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
             Object decision1 = playerTurn(pokemon1, turns, Setup.team1); // the decision of the first player, saved into type object
             // this is because it can be of type Individual or type Move.
-            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
+//            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
             // ideally this time would be used to passover the computer
             Object decision2 = playerTurn(pokemon2, turns, Setup.team2); // the decision of the second player, same thought process as the first one.
             // we want to store both players' decisions so that they can be executed at the same time
@@ -143,10 +143,16 @@ public class Battle {
 
     }
 
-    // this method will run when a pokemon faints
+    /*
+    * This method gets a new pokemon when an existing pokemon faints.
+    *
+    * Parameters: target: the pokemon that just fainted
+    * team: the team that pokemon belongs to
+    * */
     public static Individual newPokemon (Individual target, ArrayList<Individual> team) {  // takes the pokemon that died and its team as parameters
         System.out.println(target.getName() + " fainted."); // let the players know whats happening.
 
+        // the target will have been removed from team at this point, so we don't need to do that again.
 
         String[] names = new String[team.size()]; // different sizes possible based on how many pokemon are left
 
@@ -164,15 +170,26 @@ public class Battle {
 
 
 
-    // this method simply switchout the passed in pokemon, and returns decision after casting it to type Individual
+
+    /*
+    * This pokemon switches out the existing pokemon and returns the new pokemon after casting it to an individual
+    * Parameters: pokemonOut, an object of type individual, this is the pokemon that is being switched out
+    * decision is an object of type Object as we know it is an individual, but we have yet to cast it yet.
+    * */
     public Individual switchPokemon(Individual pokemonOut, Object decision) {
         pokemonOut.switchPokemonOut();
         return (Individual) decision;
     }
 
 
-    //  we can write less lines by making this method.
-    // put the appropriate pokemon and move in the right slots based on who's moving first
+    /*
+    * This method does the attacking when both pokemon attack
+    * Parameters:
+    *   firstMove - the move that will be used first
+    *   secondMove - the move that will be used second
+    *   firstPokemon - the pokemon using firstMove
+    *   secondPokemon - the pokemon using secondMove
+    * */
     public void attacks(Object firstMove, Object secondMove, Individual firstPokemon, Individual secondPokemon) throws InterruptedException {
         ((Move) firstMove).purpose(firstPokemon, secondPokemon);
 
@@ -182,18 +199,25 @@ public class Battle {
     }
 
 
-    // this is the method that runs for each player to get their decision
-    // get their pokemon, turn number and team
+    /*
+     * This method gets each player's decision
+     * Parameters:
+     *   pokemon - the pokemon that player has out
+     *   turns - the turns that elapsed
+     *   team - the player's team
+     * */
     public Object playerTurn(Individual pokemon, int turns, ArrayList<Individual> team) {
 
 
         // create our array of choices for the user
 
         String[] options;
+        // if the pokemon has pp
         if (pokemon.hasPP()) {
             options = new String[]{"More Info", "Switch out", pokemon.moves[0].toString(), pokemon.moves[1].toString()
                     , pokemon.moves[2].toString(), pokemon.moves[3].toString()};
         }
+        // if the pokemon doesn't have pp, they can only use a special move called struggle, or switch
         else{
             options = new String[]{"More Info", "Switch out", "Struggle"};
         }

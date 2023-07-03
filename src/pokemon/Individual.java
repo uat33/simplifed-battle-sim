@@ -27,11 +27,13 @@ public class Individual extends Species{
     // we need an array for this because we need to keep track of alterations
     // because alterations disappear if you switch out your pokemon
 
-    private int[] stats; // the actual stats of the pokemon
-    private final int[] startingStats; // the stats when the pokemon first switches in
-    // keeping this separate makes recalculation easier
+    private final int[] stats; // the actual stats of the pokemon, including changes
 
-    private final int maxHP;
+
+    private final int[] startingStats; // the stats when the pokemon first switches in. keeping this separate makes recalculation easier
+
+
+    private final int maxHP; // the maximum health of this pokemon
 
 
 
@@ -42,7 +44,7 @@ public class Individual extends Species{
 
     private final int teamNum; // keep track of which team this pokemon belongs to. 1 for player 1, 2 for player 2
 
-    public Move[] moves; // the actual moves the pokemon will have.
+    public final Move[] moves; // the actual moves the pokemon will have.
 
 
     // the stat changes
@@ -110,16 +112,23 @@ public class Individual extends Species{
 
     }
 
+
+    /*
+     * This method gets the health percentage by dividing current health by max health, muliplying by 100 and then rounding.
+
+     * */
     public int getPercentHealth(){
         return (int) Math.round((double) stats[0] / maxHP * 100);
     }
 
 
-    // here's the method to calculate the stats.
-    // basically we take the basestats, ivs, evs, level and the nature code, throw it into a formula and call it a day.
+    /*
+     * This method calculates this pokemon's stats using the level, ivs, evs, basestats and nature.
+
+     * */
     public int[] statCalcs() {
         int[] stats = new int[6]; // array to hold the 6 stats
-        int[] baseStats = getBaseStats();
+        int[] baseStats = getBaseStats(); // get the base stats here so we don't have to keep doing it in the loop
 
         for(int i = 0; i < 6; i++) {
 
@@ -139,12 +148,15 @@ public class Individual extends Species{
         return stats; // return it
     }
 
-    // return whether or not the pokemon still has pp for any of its moves
+    /*
+     * This method returns whether this pokemon has any moves left. if the pp of all moves is 0, there are no moves left.
+     * */
     public boolean hasPP(){
+        // open a stream to check if any of the moves' pp is > 0
         return Arrays.stream(moves).anyMatch(x -> x.getPp() > 0);
     }
 
-    // getters and setters
+    // getters
 
     public int getTeamNum() {
         return teamNum;
@@ -170,7 +182,9 @@ public class Individual extends Species{
 
 
 
-
+    /*
+     * This method recalculates stats afters stat changes have happened
+     * */
     public void recalculate() { // just setting the statcodes does nothing
 
         // we also need to recalculate stats when this happens
@@ -182,19 +196,24 @@ public class Individual extends Species{
     }
 
 
+    /*
+     * This method displays the user's stats in a readable manner.
 
+     * */
     private String displayStats(){
         String[] changes = new String[5]; // we want to show the stat changes if there are any
         for (int i = 0; i < 5; i++){ // 5 stats that can be changed
             int statChange = statCodes[i]; // create a variable so we don't keep accessing
             if (statChange != 0){ // if there is a change, do the appropriate formatting
+                // if the stat change is more than 0, throw in a + sign
+                // otherwise, it will be negative so no sign needed
                 changes[i] = statChange > 0 ? "(+%d)".formatted(statChange) : "(%d)".formatted(statChange);
             }
             else{ // empty string if there is no change
                 changes[i] = "";
             }
         }
-        // return the string
+        // return the string with some formatting
         return String.format("""
 
                 Health: %d / %d
@@ -208,17 +227,18 @@ public class Individual extends Species{
 
     }
 
-
-    public String toString() { // when we call this, we want all the info the user could want on the pokemon displayed in a readable way
+    /*
+     * This method is the toString. When it is called, we want all this pokemon's information displayed in a readable manner.
+     * */
+    public String toString() {
         return super.toString() + "\nNature: " + nature + displayStats();
     }
 
-
-
-
-
-    public void pokemonStatus() { // inform players the status of this pokemon
-        System.out.println(); // skip
+    /*
+     * This method displays this pokemon's name and health remaining.
+     * */
+    public void pokemonStatus() {
+        System.out.println(); // skip a line
         System.out.printf("%s, Health remaining: %d%%\n", getName(), getPercentHealth());
     }
 
@@ -233,8 +253,6 @@ public class Individual extends Species{
 
         StringBuilder moveString = new StringBuilder();
         for (Move move : moves) {
-
-
             moveString.append(move.getMove()).append("\n");
         }
         return moveString; // return the string
@@ -242,7 +260,9 @@ public class Individual extends Species{
     }
 
 
-    // when a pokemon is switched out, statCodes reset to the default value, 6
+    /*
+     * This method is run when a pokemon switches out. It resets stats and informs players.
+     * */
     public void switchPokemonOut() {
 
         Arrays.fill(statCodes, 0);
@@ -251,15 +271,29 @@ public class Individual extends Species{
         System.out.println(getName() + " is switched out."); // let the players know what's happening
     }
 
+    /*
+     * This method is run when a pokemon swtiches in. It informs players.
+     * */
     public void switchPokemonIn() { // this needs to run when the pokemon is sent in.
         System.out.println("Player " + teamNum + " sends out " + getName() + '.'); // let the players know what's happening
     }
 
-    public boolean isAlive() { // if the hp is more than 0 pokemon is alive, return true, otherwise return false
+    /*
+     * This method checks whether a pokemon is alive by checking if its hp is more than 0.
+     * */
+    public boolean isAlive() {
         return stats[0] > 0;
 
     }
-
+    /*
+     * This method sets the natureCodes for a pokemon.
+     * Parameters:
+     *  - natureCodes - the current nature codes array
+     *  - nature - the nature this pokemon has
+     *
+     *
+     *
+     * */
     public static void natures(double[] natureCodes, String nature) {
         // here's the method to change the multiplier based on the nature
         // we're comparing one string with 20 so switch statements are easier.
