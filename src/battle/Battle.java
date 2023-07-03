@@ -115,7 +115,7 @@ public class Battle {
                     // then the pokemon
                     attacks(decision2, decision1, pokemon2, pokemon1); // so change who goes where
                 }
-                else { // if there's a speed tie. its a 50-50 chance for who moves first
+                else { // if there's a speed tie, it's a 50-50 chance for who moves first
                     if(Math.random() < .5) {
                         attacks(decision1, decision2, pokemon1, pokemon2); // pokemon1 goes first
                     }
@@ -127,7 +127,7 @@ public class Battle {
 
             turns++;
 
-        } while (Setup.team1.size() > 0 && Setup.team2.size() > 0);
+        } while (Setup.team1.size() > 0 && Setup.team2.size() > 0); // execute the loop while both players have pokemon
 
 
 
