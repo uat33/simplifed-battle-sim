@@ -25,6 +25,7 @@ public class Setup {
     // these fields are all static as there should only be one per battle
     private static final Type[] types = new Type[17];
     private static String[] moves = new String[559];
+    private static String[] pokemon = new String[676];
     public static ArrayList<Individual> team1 = new ArrayList<>(); // contains the first players team
     public static ArrayList<Individual> team2 = new ArrayList<>(); // contains the second players team
 
@@ -40,11 +41,12 @@ public class Setup {
         // instead of making an object for all 559 moves
         // we can just make objects for the 48 moves we use
         // even if there are duplicates among the 48, we still need to make separate objects
-        // if we don't, the pp will be the same for all pokemon with that move
-        String l = Files.readString(Path.of("textFiles/moves.txt")); // read in the moves
-        moves = l.split("\n"); // split into an array where each entry is a move
+        // if we don't, then one pokemon using that move will reduce pp for all the pokemon using that move
+        String allMoves = Files.readString(Path.of("textFiles/moves.txt")); // read in the moves
+        moves = allMoves.split("\n"); // split into an array where each entry is a move
         // sort that array in alphabetical order by the name of the move
-        Comparator<String> comp = (String a, String b) -> {
+
+        Comparator<String> moveComp = (String a, String b) -> {
             int start1 = a.indexOf("\t") + 1; // start of the move name
             int end1 = a.indexOf("\t", start1); // end of the move name
             int start2 = b.indexOf("\t") + 1; // start of the move name
@@ -52,9 +54,22 @@ public class Setup {
             return a.substring(start1, end1).compareTo(b.substring(start2, end2));
         };
 
-        Arrays.sort(moves, comp);
+        Arrays.sort(moves, moveComp);
         // sorting it will make it faster to find our move -- we won't have to loop through up to 559 entries several times
 
+        // we can do something similar for the pokemon
+        // instead of looping through up to 676 entries several times, we can sort it
+        String allPokemon = Files.readString(Path.of("textFiles/pokemon.txt"));
+        pokemon = allPokemon.split("\n");
+
+        Comparator<String> pokemonComp = (String a, String b) -> {
+            int start1 = a.indexOf(",") + 1; // start of the pokemon name
+            int end1 = a.indexOf(",", start1); // end of the pokemon name
+            int start2 = b.indexOf(",") + 1; // start of the pokemon name
+            int end2 = b.indexOf(",", start2); // end of the pokemon name
+            return a.substring(start1, end1).compareTo(b.substring(start2, end2));
+        };
+        Arrays.sort(pokemon, pokemonComp); // the pokemon array is now sorted by the name of the pokemon
 
 
         // now that that's done, we can set up the teams.
@@ -76,36 +91,6 @@ public class Setup {
         team2 = teamSetup(new Scanner(new File(teamFile + team2File)), 2);
 
     }
-
-
-    // now to get the pokemon info.
-    // this info is taken from a text file that contains the name, types, stats, etc. for every pokemon from gen 1-5
-    // we use this to create our objects
-    public static String[] getPokemonInfo(Scanner inFile, String name) {
-        String[] information = new String[8];
-        // 8 pieces of information taken from the text file. not the teams text file, but the text file with every pokemon until generation 5
-        // the purpose is to use that text file to get the type and other necessary info
-        // name is the pokemon from the teams file that we're searching for
-
-        while (inFile.hasNextLine()) { // go through the file
-            String[] attributes = inFile.nextLine().split(","); // break the line into array
-            if (attributes[1].equals(name)) { // if these two are equivalent, we've found the pokemon we're looking for
-
-                // the first six values match with what we need
-                System.arraycopy(attributes, 5, information, 0, 6);
-                information[6] = attributes[2]; // order's a bit weird, but this is where it goes
-                information[7] = attributes[3];
-
-
-                return information; // return this information
-            }
-
-
-        }
-        return information;
-    }
-
-
 
     public static Move[] getMoves(Scanner inFile) {
 
@@ -147,7 +132,7 @@ public class Setup {
 
         while (teamFile.hasNextLine()) {
             Scanner pokeFile = new Scanner(new File("textFiles/pokemon.txt")); // we need to remake the text file so we can start at the top to find each pokemon
-            String name = teamFile.nextLine(); // the pokemon's name will be the next line
+            String pokemonName = teamFile.nextLine(); // the pokemon's name will be the next line
 
             int[] evs = getEvs(teamFile.nextLine()); // get the evs from the method
 
@@ -157,12 +142,26 @@ public class Setup {
             Move[] fourMoves = getMoves(teamFile); // get the moves from the method
 
 
-            String[] info = getPokemonInfo(pokeFile, name); // get the info from the method
+            // use binarysearch to get the index of the pokemon
+            int index = Arrays.binarySearch(pokemon, pokemonName, (String a, String b) -> {
+                int start1 = a.indexOf(",") + 1; // since all the pokemon info is there, not just the name, we have to separate out the name
+                int end1 = a.indexOf(",", start1);
+                return a.substring(start1, end1).compareTo(b);
+            });
+
+            String[] information = new String[8];
+            String[] attributes = pokemon[index].split(","); // the attributes of the pokemon we are looking for
+            // the first six values match with what we need in terms of order
+            // copies over the 6 base stat values into information
+            System.arraycopy(attributes, 5, information, 0, 6);
+            // now we copy over the types
+            information[6] = attributes[2];
+            information[7] = attributes[3];
 
             int[] baseStats = new int[6]; // create empty array for base stats
 
             for (int i = 0; i < 6; i++) {
-                baseStats[i] = Integer.parseInt(info[i]); // use info values to parse into int and store them
+                baseStats[i] = Integer.parseInt(information[i]); // parse the base stats from the information array into ints and store them
             }
 
 
@@ -171,15 +170,15 @@ public class Setup {
             // each pokemon can have one or two types.
             // since we don't necessarily know how many types, use an arraylist
 
-            types.add(getTypeFromName(info[6])); // use the method to find the type object from its name
-            if (info[7].length() > 0) { // if there is a second type
-                types.add(getTypeFromName(info[7])); // add that as well.
+            types.add(getTypeFromName(information[6])); // use the method to find the type object from its name
+            if (information[7].length() > 0) { // if there is a second type
+                types.add(getTypeFromName(information[7])); // add that as well.
             }
             // now we have everything
             // can create pokemon object
 
 
-            Individual pokemon = new Individual(name, types, baseStats, nature, fourMoves, evs, teamNum); // create the object
+            Individual pokemon = new Individual(pokemonName, types, baseStats, nature, fourMoves, evs, teamNum); // create the object
 
             team.add(pokemon); // add it to the team
 
@@ -250,6 +249,5 @@ public class Setup {
             types[index++] = new Type(in.nextLine());
         }
     }
-
 
 }

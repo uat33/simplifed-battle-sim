@@ -526,7 +526,7 @@
 510	Incinerate	Fire	Special	15	60	100	V
 511	Quash	Dark	Status	15	—	100	V
 512	Acrobatics	Flying	Physical	15	55	100	V
-513	Reflect Type	Normal	Status	15	—	—	V
+513	Reflect type.Type	Normal	Status	15	—	—	V
 514	Retaliate	Normal	Physical	5	70	100	V
 515	Final Gambit	Fighting	Special	5	—	100	V
 516	Bestow	Normal	Status	15	—	—	V
