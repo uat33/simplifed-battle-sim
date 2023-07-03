@@ -40,8 +40,8 @@ public class Battle {
 
         // in random battles, a random pokemon is chosen from both teams and sent out.
         // so get a random number from 0 to 5 for each team, and set pokemon1 and pokemon2 to the pokemon in that slot in the team objects from the setup class
-        pokemon1 = Setup.team1.get(rand.nextInt(6));
-        pokemon2 = Setup.team2.get(rand.nextInt(6));
+        pokemon1 = Setup.team1.get(rand.nextInt(Setup.team1.size()));
+        pokemon2 = Setup.team2.get(rand.nextInt(Setup.team2.size()));
 
 
         // switch in those two pokemon
@@ -117,7 +117,7 @@ public class Battle {
                 }
                 else { // if there's a speed tie, it's a 50-50 chance for who moves first
                     if(Math.random() < .5) {
-                        attacks(decision1, decision2, pokemon1, pokemon2); // pokemon1 goes first
+                        attacks(decision1, decision2, pokemon1, pokemon2); // pokemon 1 goes first
                     }
                     else {
                         attacks(decision2, decision1, pokemon2, pokemon1);  // pokemon 2 goes first
@@ -245,7 +245,6 @@ public class Battle {
             // if their pokemons num is 1, the opponents pokemon is in the field pokemon2
             // if their pokemons num is 2, the opponents pokemon is in the field pokemon1
             // add the appropriate pokemons types
-            // skip a line for readability
             Individual opponent = pokemon.getTeamNum() == 1 ? pokemon2 : pokemon1;
             info += "\n\nOpposing pokemon %s is a %s with %d percent health remaining".formatted(opponent.getName(),
                     opponent.displayTypes(), opponent.getPercentHealth());
@@ -257,12 +256,14 @@ public class Battle {
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, back, null);
 
 
-            if (choice == 0) return playerTurn(pokemon, turns, team); // if the choose back, just call the method again -- recursion.
+            if (choice == 0) return playerTurn(pokemon, turns, team); // if the choice is back, just call the method again -- recursion.
         }
 
 
         // wants to switch
-        ArrayList<String> teamPokemon = new ArrayList<>(); // create an arraylist of strings
+        // create an arraylist of strings
+        // make the size the number of remaining pokemon, + 1 for the back option
+        ArrayList<String> teamPokemon = new ArrayList<>(team.size() + 1);
         // the player wants to switch
         teamPokemon.add("Back"); // add a back option so they are not locked into switching
         // make back the first option because we want it to appear as the last

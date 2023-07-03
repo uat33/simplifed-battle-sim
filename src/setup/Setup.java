@@ -23,16 +23,24 @@ public class Setup {
     // we can use an array as the size of this will never change
 
     // these fields are all static as there should only be one per battle
-    private static final Type[] types = new Type[17];
-    private static String[] moves = new String[559];
-    private static String[] pokemon = new String[676];
-    public static ArrayList<Individual> team1 = new ArrayList<>(); // contains the first players team
-    public static ArrayList<Individual> team2 = new ArrayList<>(); // contains the second players team
+
+    // create some constants so it's clear what these numbers mean
+    final static int NUMBER_OF_TYPES = 17, NUMBER_OF_MOVES = 559, NUMBER_OF_POKEMON = 676, TEAM_SIZE = 6;
 
 
-    // a special move that we want to  be able to access from the battle class
+    private static final Type[] types = new Type[NUMBER_OF_TYPES];
+    private static String[] moves = new String[NUMBER_OF_MOVES];
+    private static String[] pokemon = new String[NUMBER_OF_POKEMON];
+    public static ArrayList<Individual> team1 = new ArrayList<>(TEAM_SIZE); // contains the first players team
+    public static ArrayList<Individual> team2 = new ArrayList<>(TEAM_SIZE); // contains the second players team
+
+
 
     public Setup() throws IOException {
+
+        // create a constant for the number of team files we have so this can be easily changed if we add more files
+        final int NUMBER_OF_TEAM_FILES = 5;
+
 
         // first set up the types
         typeSetup();
@@ -63,7 +71,7 @@ public class Setup {
         pokemon = allPokemon.split("\n");
 
         Comparator<String> pokemonComp = (String a, String b) -> {
-            int start1 = a.indexOf(",") + 1; // start of the pokemon name
+            int start1 = a.indexOf(",") + 1; // start of the pokemon name -- this file is separated by commas instead of tabs
             int end1 = a.indexOf(",", start1); // end of the pokemon name
             int start2 = b.indexOf(",") + 1; // start of the pokemon name
             int end2 = b.indexOf(",", start2); // end of the pokemon name
@@ -77,10 +85,10 @@ public class Setup {
         // we want different teams each time we need to choose two different teams randomly
         Random rand = new Random();  // random object
         // create the random numbers. add one cause the text files start at 1 instead of 0.
-        int team1File = rand.nextInt(5) + 1, team2File = rand.nextInt(5) + 1;
+        int team1File = rand.nextInt(NUMBER_OF_TEAM_FILES) + 1, team2File = rand.nextInt(NUMBER_OF_TEAM_FILES) + 1;
 
-        while (team1File == team2File) { // we want different teams so while those two variables are different.
-            team2File = rand.nextInt(5) + 1; // keep rerolling the second one.
+        while (team1File == team2File) { // we want different teams so while those two variables are equal.
+            team2File = rand.nextInt(NUMBER_OF_TEAM_FILES) + 1; // keep re-rolling the second one.
         }
 
 

@@ -11,10 +11,7 @@ import java.util.HashMap;
 *
 * */
 
-public class Type {
-
-
-
+public final class Type {
 
 	// the name of the type e.g. Fire, Water
 	private final String typeName;
@@ -44,7 +41,7 @@ public class Type {
 		this.matchup = matchups(components);
 	}
 
-	public HashMap<String, Double> matchups(String[] line){
+	private HashMap<String, Double> matchups(String[] line){
 		HashMap<String, Double> m = new HashMap<>();
 
 		for (int i = 1; i < line.length; i++){
