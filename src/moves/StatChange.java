@@ -61,7 +61,7 @@ public class StatChange{
     // a very common application for status moves is raising your own stats or decreasing the opponent's stats.
     // we can make general methods for this, that can be called at a later time.
 
-    // if the attack goes up, we know it's for the user. so we don't need any other parameters
+    // note: for some of these, there are no moves that make that change, however the method is included anyway as it makes future changes easier
     // attack is the first statcode, so take that and increase by one.
 
 
@@ -112,6 +112,7 @@ public class StatChange{
         doTheChanges(pokemon, true, 1, 2);
         change(pokemon.getName(), "special attack", "rose");
     }
+
     public static void OneSpAttDrop(Individual pokemon) { // -1 SpAtt
         doTheChanges(pokemon, false, 1, 2);
         change(pokemon.getName(), "special attack", "fell");

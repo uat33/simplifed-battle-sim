@@ -32,7 +32,7 @@ public class Attack extends Move {
     }
 
     @Override
-    public void purpose(Individual user, Individual target) {
+    public void purpose(Individual user, Individual target) throws InterruptedException {
 
 
         System.out.println(user.getName() + " used " + getName());
@@ -56,7 +56,7 @@ public class Attack extends Move {
         boolean crit = rand.nextInt(16) == 15; // 1 in 16 chance that this will be 15
 
 
-        int att = 0, def = 0;
+        int att, def;
 
         if (getCategory().equals("Physical")) {
             // the indices are strange here because statcodes doesn't have hp because that can't be lowered, whereas the other two arrays we have do have hp
@@ -141,7 +141,7 @@ public class Attack extends Move {
 
         // tell users what happened
         // depending on how the types stack up, sometimes text is printed here
-//        Thread.sleep(500); // we want a gap, so it flows better
+        Thread.sleep(500); // we want a gap, so it flows better
 
         // have to output text based on the typemultiplier
         // 1 means no text
@@ -172,7 +172,7 @@ public class Attack extends Move {
 
         // if the pokemon dies, you're not supposed to reveal how much damage the move does.
         // so take that into account;
-//        Thread.sleep(500); // we want a gap, so it flows better
+        Thread.sleep(500); // we want a gap, so it flows better
 
 
 

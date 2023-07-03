@@ -83,7 +83,7 @@ public class Individual extends Species{
 
 
     // take constructor from super class.
-    public Individual(String name, ArrayList<Type> types, int[] baseStats, String nature, Move[] moves, int evs[], int teamNum) {
+    public Individual(String name, ArrayList<Type> types, int[] baseStats, String nature, Move[] moves, int[] evs, int teamNum) {
 
         super(name, types, baseStats);
         this.nature = nature;
@@ -157,12 +157,6 @@ public class Individual extends Species{
     public int[] getStats() {
         return stats;
     }
-
-
-    public void setStats(int[] stats) {
-        this.stats = stats;
-    }
-
 
     public int getMaxHP(){
         return maxHP;

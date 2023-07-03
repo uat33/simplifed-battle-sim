@@ -63,10 +63,10 @@ public class Battle {
             pokemon1.pokemonStatus();
             System.out.println(); // skip lines
             pokemon2.pokemonStatus();
-//            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
+            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
             Object decision1 = playerTurn(pokemon1, turns, Setup.team1); // the decision of the first player, saved into type object
             // this is because it can be of type Individual or type Move.
-//            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
+            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
             // ideally this time would be used to passover the computer
             Object decision2 = playerTurn(pokemon2, turns, Setup.team2); // the decision of the second player, same thought process as the first one.
             // we want to store both players' decisions so that they can be executed at the same time

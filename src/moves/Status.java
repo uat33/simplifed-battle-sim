@@ -76,10 +76,7 @@ public class Status extends Move{
 
             // moves that raise attack one stages
 
-            case "Meditate", "Sharpen", "Howl" -> {
-                StatChange.OneAttackRaise(user);
-                ;
-            }
+            case "Meditate", "Sharpen", "Howl" -> StatChange.OneAttackRaise(user);
             // moves that raise defense one stages
 
             case "Harden", "Defense Curl", "Withdraw" -> StatChange.OneDefenseRaise(user);

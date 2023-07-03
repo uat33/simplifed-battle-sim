@@ -127,11 +127,10 @@ public class Setup {
     }
 
 
-    public static ArrayList<Individual> teamSetup(Scanner teamFile, int teamNum) throws IOException {
+    public static ArrayList<Individual> teamSetup(Scanner teamFile, int teamNum) {
         ArrayList<Individual> team = new ArrayList<>(); // create arraylist we will return
 
         while (teamFile.hasNextLine()) {
-            Scanner pokeFile = new Scanner(new File("textFiles/pokemon.txt")); // we need to remake the text file so we can start at the top to find each pokemon
             String pokemonName = teamFile.nextLine(); // the pokemon's name will be the next line
 
             int[] evs = getEvs(teamFile.nextLine()); // get the evs from the method

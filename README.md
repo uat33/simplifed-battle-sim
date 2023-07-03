@@ -11,5 +11,5 @@ Description: A simplified Pokemon Battle Simulator, made as a project a while ag
 
  Teams are taken randomly from text files.
 
- Instructions: Run the main.Main.java file. Seeing as a lot of pokemon revolves around information, there's no good way to do this on one computer. Instead, there are 3 seconds between turns for someone to pass the computer around.
+ Instructions: Run the main.Main.java file. Seeing as a lot of pokemon revolves around information, there's no good way to do this on one computer. Instead, there are 3 seconds between turns using Thread.sleep for someone to pass the computer around.
 

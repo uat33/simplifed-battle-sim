@@ -9,8 +9,6 @@ import java.util.HashMap;
 *
 * Each of the 17 types will have objects of this class.
 *
-*
-*
 * */
 
 public class Type {
@@ -39,7 +37,7 @@ public class Type {
 	public Type(String line) {
 		// turn the line into an array of its components
 		// the array will have 18 values, the first of which is the type name
-		// the second will be how that type matches up against all the other types.
+		// the other 17 will be how that type matches up against all the other types.
 		String[] components = line.split("\t");
 
 		this.typeName = components[0];
@@ -67,10 +65,6 @@ public class Type {
 		return matchup;
 	}
 
-
-
-
-	// the match-ups are 17 numbers and have no context. so it's not really useful to include it in the to string.
 	@Override
 	public String toString() {
 
