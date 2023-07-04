@@ -2,6 +2,7 @@ package pokemon;
 
 import moves.Attack;
 import moves.Move;
+import moves.StatChange;
 import type.Type;
 import setup.Setup;
 
@@ -57,7 +58,8 @@ public class Individual extends Species{
     // default is 1
     private final double[] natureCodes = {1, 1, 1, 1, 1};
 
-    // struggle
+    // struggle: a special move that can only be used when a pokemon is out of pp
+    // as every pokemon can use it, and it never runs out of pp, we only need one struggle object
     public static final Attack struggle = new Attack("Struggle", Setup.getTypeFromName("Normal"), "Physical", 1, "50", "—");
 
     // initialize the stat change codes
@@ -246,9 +248,8 @@ public class Individual extends Species{
 
     // we're going to make a custom get moves method
     // the default one can't be understood due to containing all the type matchups
-    // we can't just use moves.toString() cause there are four of them. so we have to add those together.
+    // we can't just use moves.toString() cause there is more information we want to show which is in the getMoves method
     // we want this method to give extra information on the moves.
-
     public StringBuilder getMoves() {
 
         StringBuilder moveString = new StringBuilder();
@@ -265,14 +266,14 @@ public class Individual extends Species{
      * */
     public void switchPokemonOut() {
 
-        Arrays.fill(statCodes, 0);
+        Arrays.fill(statCodes, 0); // reset stat changes
         recalculate(); // recalculate so stats go back to their base stats
 
         System.out.println(getName() + " is switched out."); // let the players know what's happening
     }
 
     /*
-     * This method is run when a pokemon swtiches in. It informs players.
+     * This method is run when a pokemon switches in. It informs players.
      * */
     public void switchPokemonIn() { // this needs to run when the pokemon is sent in.
         System.out.println("Player " + teamNum + " sends out " + getName() + '.'); // let the players know what's happening
@@ -290,9 +291,6 @@ public class Individual extends Species{
      * Parameters:
      *  - natureCodes - the current nature codes array
      *  - nature - the nature this pokemon has
-     *
-     *
-     *
      * */
     public static void natures(double[] natureCodes, String nature) {
         // here's the method to change the multiplier based on the nature
@@ -303,89 +301,96 @@ public class Individual extends Species{
         // which would mean it is one of the 5 natures that don't change anything
         // natures that do nothing are never seen competitively, but they exist so have to take them into account
         // the default case is to do nothing
+
+        // only attack, defense, special attack, special defense and speed can be affected by natures
+        // the indices for this are the same as the ones in statchange
+        // so make those public and use them so it is more clear what each nature does
+
+        final double BOOST = 1.1; // when it increases a stat, it becomes 110 percent of what it was
+        final double LOWER = 0.9; // when a nature lowers a stat it becomes 90 percent of what it was
+
         switch (nature) {
             case "Adamant" -> {
-                natureCodes[0] = 1.1;
-                natureCodes[2] = .9;
+                natureCodes[StatChange.ATTACK] = BOOST;
+                natureCodes[StatChange.SP_ATTACK] = LOWER;
             }
             case "Modest" -> {
-                natureCodes[2] = 1.1;
-                natureCodes[0] = .9;
+                natureCodes[StatChange.SP_ATTACK] = BOOST;
+                natureCodes[StatChange.ATTACK] = LOWER;
             }
             case "Jolly" -> {
-                natureCodes[4] = 1.1;
-                natureCodes[2] = .9;
+                natureCodes[StatChange.SPEED] = BOOST;
+                natureCodes[StatChange.SP_ATTACK] = LOWER;
             }
             case "Naive" -> {
-                natureCodes[4] = 1.1;
-                natureCodes[3] = .9;
+                natureCodes[StatChange.SPEED] = BOOST;
+                natureCodes[StatChange.SP_DEFENSE] = LOWER;
             }
             case "Lonely" -> {
-                natureCodes[0] = 1.1;
-                natureCodes[1] = .9;
+                natureCodes[StatChange.ATTACK] = BOOST;
+                natureCodes[StatChange.DEFENSE] = LOWER;
             }
             case "Timid" -> {
-                natureCodes[4] = 1.1;
-                natureCodes[0] = .9;
+                natureCodes[StatChange.SPEED] = BOOST;
+                natureCodes[StatChange.ATTACK] = LOWER;
             }
             case "Hasty" -> {
-                natureCodes[4] = 1.1;
-                natureCodes[1] = .9;
+                natureCodes[StatChange.SPEED] = BOOST;
+                natureCodes[StatChange.DEFENSE] = LOWER;
             }
             case "Naughty" -> {
-                natureCodes[0] = 1.1;
-                natureCodes[3] = .9;
+                natureCodes[StatChange.ATTACK] = BOOST;
+                natureCodes[StatChange.SP_DEFENSE] = LOWER;
             }
             case "Brave" -> {
-                natureCodes[0] = 1.1;
-                natureCodes[4] = .9;
+                natureCodes[StatChange.ATTACK] = BOOST;
+                natureCodes[StatChange.SPEED] = LOWER;
             }
             case "Bold" -> {
-                natureCodes[1] = 1.1;
-                natureCodes[0] = .9;
+                natureCodes[StatChange.DEFENSE] = BOOST;
+                natureCodes[StatChange.ATTACK] = LOWER;
             }
             case "Impish" -> {
-                natureCodes[1] = 1.1;
-                natureCodes[2] = .9;
+                natureCodes[StatChange.DEFENSE] = BOOST;
+                natureCodes[StatChange.SP_ATTACK] = LOWER;
             }
             case "Lax" -> {
-                natureCodes[1] = 1.1;
-                natureCodes[3] = .9;
+                natureCodes[StatChange.DEFENSE] = BOOST;
+                natureCodes[StatChange.SP_DEFENSE] = LOWER;
             }
             case "Relaxed" -> {
-                natureCodes[1] = 1.1;
-                natureCodes[4] = .9;
+                natureCodes[StatChange.DEFENSE] = BOOST;
+                natureCodes[StatChange.SPEED] = LOWER;
             }
             case "Rash" -> {
-                natureCodes[2] = 1.1;
-                natureCodes[3] = .9;
+                natureCodes[StatChange.SP_ATTACK] = BOOST;
+                natureCodes[StatChange.SP_DEFENSE] = LOWER;
             }
             case "Calm" -> {
-                natureCodes[3] = 1.1;
-                natureCodes[0] = .9;
+                natureCodes[StatChange.SP_DEFENSE] = BOOST;
+                natureCodes[StatChange.ATTACK] = LOWER;
             }
             case "Gentle" -> {
-                natureCodes[3] = 1.1;
-                natureCodes[1] = .9;
+                natureCodes[StatChange.SP_DEFENSE] = BOOST;
+                natureCodes[StatChange.DEFENSE] = LOWER;
             }
             case "Sassy" -> {
-                natureCodes[3] = 1.1;
-                natureCodes[4] = .9;
+                natureCodes[StatChange.SP_DEFENSE] = BOOST;
+                natureCodes[StatChange.SPEED] = LOWER;
             }
             case "Careful" -> {
-                natureCodes[3] = 1.1;
-                natureCodes[2] = .9;
+                natureCodes[StatChange.SP_DEFENSE] = BOOST;
+                natureCodes[StatChange.SP_ATTACK] = LOWER;
             }
             case "Mild" -> {
-                natureCodes[2] = 1.1;
-                natureCodes[1] = .9;
+                natureCodes[StatChange.SP_ATTACK] = BOOST;
+                natureCodes[StatChange.DEFENSE] = LOWER;
             }
             case "Quiet" -> {
-                natureCodes[2] = 1.1;
-                natureCodes[4] = .9;
+                natureCodes[StatChange.SP_ATTACK] = BOOST;
+                natureCodes[StatChange.SPEED] = LOWER;
             }
         }
     }
-
 
 }

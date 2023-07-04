@@ -2,6 +2,7 @@ package battle;
 
 import moves.Move;
 import pokemon.Individual;
+import pokemon.Species;
 import setup.Setup;
 
 import javax.swing.*;
@@ -43,7 +44,6 @@ public class Battle {
         pokemon1 = Setup.team1.get(rand.nextInt(Setup.team1.size()));
         pokemon2 = Setup.team2.get(rand.nextInt(Setup.team2.size()));
 
-
         // switch in those two pokemon
         pokemon1.switchPokemonIn();
         pokemon2.switchPokemonIn();
@@ -63,10 +63,10 @@ public class Battle {
             pokemon1.pokemonStatus();
             System.out.println(); // skip lines
             pokemon2.pokemonStatus();
-//            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
+            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
             Object decision1 = playerTurn(pokemon1, turns, Setup.team1); // the decision of the first player, saved into type object
             // this is because it can be of type Individual or type Move.
-//            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
+            Thread.sleep(3000); // we need to give time before opening the next window, because the players cannot be allowed to see each other's info
             // ideally this time would be used to passover the computer
             Object decision2 = playerTurn(pokemon2, turns, Setup.team2); // the decision of the second player, same thought process as the first one.
             // we want to store both players' decisions so that they can be executed at the same time
@@ -222,10 +222,7 @@ public class Battle {
             options = new String[]{"More Info", "Switch out", "Struggle"};
         }
 
-
-        // I have no idea why, but it shows options in reverse order in the pane
-        // so i looked it up, and apparently this is a thing in macOS
-        // it shows it from right to left, but on windows and linux its left to right
+        // on a mac it displays these options from right to left, but on windows and linux its left to right
 
 
 
@@ -283,17 +280,18 @@ public class Battle {
             if (choice == 0) return playerTurn(pokemon, turns, team); // if the choice is back, just call the method again -- recursion.
         }
 
-
         // wants to switch
         // create an arraylist of strings
         // make the size the number of remaining pokemon, + 1 for the back option
         ArrayList<String> teamPokemon = new ArrayList<>(team.size() + 1);
         // the player wants to switch
         teamPokemon.add("Back"); // add a back option so they are not locked into switching
+        // open a stream from team
+        // filter it so we get every pokemon except the one currently in battle
+        // get just the name of those pokemon and turn it into a list
+        // add those elements to teamPokemon
+        teamPokemon.addAll(team.stream().filter(p -> p != pokemon).map(Species::getName).toList());
         // make back the first option because we want it to appear as the last
-        for(Individual poke : team) { // so go through the names of each pokemon in the team
-            if(!pokemon.getName().equals(poke.getName())) teamPokemon.add(poke.getName()); // if the name is not the name of the pokemon battling, add to list.
-        }
 
 
         Object[] optionsFinal = teamPokemon.toArray(); // convert to this so they can be displayed in a new pane.
@@ -313,7 +311,4 @@ public class Battle {
         }
         return null;
     }
-
-
-
 }

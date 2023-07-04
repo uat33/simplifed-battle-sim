@@ -36,6 +36,4 @@ public interface PokemonInterface {
     // accuracy and evasion use their own multipliers
     Map<Integer, Double> statChangesAccEvasion = new HashMap<>();
 
-
-
 }

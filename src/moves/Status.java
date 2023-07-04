@@ -53,7 +53,7 @@ public class Status extends Move{
             // moves that raise defense two stages
             case "Iron Defense", "Acid Armor", "Barrier" -> StatChange.TwoDefenseRaise(user);
 
-            // tail glow and cotton guard are their own category
+            // tail glow and cotton guard are their own category, as they raise one stat 3 stages
             case "Tail Glow" -> StatChange.TailGlow(user);
             case "Cotton Guard" -> StatChange.CottonGuard(user);
 
@@ -218,8 +218,6 @@ public class Status extends Move{
             // and those are all the stat changing moves
         }
     }
-
-
 
     // make methods for moves with too many lines or else it gets very cluttered
 

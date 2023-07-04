@@ -88,8 +88,8 @@ public abstract class Move{
 
     // two string methods for two different things.
 
-    // the toString is for when the user decides the move. there is a lot of information and not of space
-    // the name and the pp are the standard in pokemon games, because pokemon players just know everything else based off of the name
+    // the toString is for when the user decides the move. there is a lot of information and not a lot of space
+    // the name and the pp are the standard in pokemon games
 
     // the getMove is for if the user asks for more information, in which case we tell them everything they could want to know
 

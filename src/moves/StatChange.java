@@ -16,7 +16,8 @@ public class StatChange{
 
     private static final int MAX_STAGES = 6, MIN_STAGES = -6;
 
-    private static final int ATTACK = 0, DEFENSE = 1, SP_ATTACK = 2, SP_DEFENSE = 3, SPEED = 4, ACCURACY = 5, EVASION = 6;
+    public static final int ATTACK = 0, DEFENSE = 1, SP_ATTACK = 2, SP_DEFENSE = 3, SPEED = 4;
+    private static final int ACCURACY = 5, EVASION = 6;
 
     /*
      * This method checks that the stat can still be changed
